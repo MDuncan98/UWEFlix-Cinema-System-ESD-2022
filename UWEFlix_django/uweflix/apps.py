@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class HomePageConfig(AppConfig):
+class UWEFlixConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'home_page'
+    name = 'uweflix'
