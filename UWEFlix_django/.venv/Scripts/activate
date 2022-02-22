@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\Micha\OneDrive\Documents\GitHub\Group-18-ESD-2022\UWEFlix_django\.venv"
+VIRTUAL_ENV="E:\Work\ESD\Group -18\Group-18-ESD-2022\UWEFlix_django\.venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

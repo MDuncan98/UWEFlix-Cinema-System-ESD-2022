@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\Micha\OneDrive\Documents\GitHub\Group-18-ESD-2022\UWEFlix_django\.venv
+set VIRTUAL_ENV=E:\Work\ESD\Group -18\Group-18-ESD-2022\UWEFlix_django\.venv
 
 if not defined PROMPT set PROMPT=$P$G
 
