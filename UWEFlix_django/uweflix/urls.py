@@ -3,5 +3,6 @@ from uweflix import views
 
 urlpatterns = [
     path("", views.home, name="home"),
-    path("viewings/", views.viewings, name="viewings")
+    path("viewings/", views.viewings, name="viewings"),
+    path("add_film/", views.add_film, name="add_film"),
 ]

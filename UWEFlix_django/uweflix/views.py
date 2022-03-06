@@ -1,8 +1,17 @@
+from multiprocessing import context
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.template import ContextPopException
+from .models import *
 
 def home(request):
     return render(request, 'uweflix/index.html')
 
 def viewings(request):
-    return render(request, 'uweflix/viewings.html')   
+    films = Film.objects.all()
+    context = {'films':films}
+    return render(request, 'uweflix/viewings.html', context)   
+
+def add_film(request):
+    context = {}
+    return render(request, 'uweflix/add_film.html', context) 

@@ -23,6 +23,10 @@ class Film(models.Model):
     # Store duration in minutes only (e.g. 120)
     trailer_desc = models.CharField(max_length=500)
 
+    def __str__(self):
+        return self.title
+   
+
 
 class Customer(models.Model):
     first_name = models.CharField(max_length=50)

@@ -3,9 +3,29 @@
     Add a film
 {% endblock %}
 {% block content %}
-    <form method="POST" class="log-form">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="save btn btn-default">Log</button>
-    </form>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="box-element" id ="form-wrapper">
+                <form id="form">
+                    <div id="film-info">
+                        <div class="form-field">
+							<input required class="form-control" type="text" name="title" placeholder="Title..">
+						</div>
+						<div class="form-field">
+							<input required class="form-control" type="text" name="age_rating" placeholder="Age Rating..">
+						</div>
+                        <div class="form-field">
+							<input required class="form-control" type="text" name="duration" placeholder="Duration..">
+						</div>
+						<div class="form-field">
+							<input required class="form-control" type="text" name="trailer_desc" placeholder="Trailer Description..">
+						</div>       
+                    </div>
+                    <hr>
+                    <input type="submit" value="Add Film">
+                </form>
+
+            </div>
+        </div>
+    </div>
 {% endblock %}
