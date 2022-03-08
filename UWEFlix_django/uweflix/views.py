@@ -25,3 +25,6 @@ def login(request):
         # ELIF ... 'am'
         #   #
     return render(request, 'uweflix/login.html')
+
+def view_accounts(request):
+    return render(request, 'uweflix/view_accounts.html')
