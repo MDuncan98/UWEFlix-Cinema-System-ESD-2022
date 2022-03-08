@@ -15,3 +15,9 @@ def viewings(request):
 def add_film(request):
     context = {}
     return render(request, 'uweflix/add_film.html', context) 
+
+def login(request):
+    if request.method == "POST":
+        request.POST.get('username') #Gets Username
+        request.POST.get('password') # Gets Password
+    return render(request, 'uweflix/login.html')
