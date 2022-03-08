@@ -20,4 +20,8 @@ def login(request):
     if request.method == "POST":
         request.POST.get('username') #Gets Username
         request.POST.get('password') # Gets Password
+        # IF account_type = 'cm'
+            #redirect to add film page
+        # ELIF ... 'am'
+        #   #
     return render(request, 'uweflix/login.html')
