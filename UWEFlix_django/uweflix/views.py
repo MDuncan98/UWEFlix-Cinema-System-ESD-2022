@@ -14,6 +14,24 @@ def viewings(request):
 
 def add_film(request):
     context = {}
+    if request.method == "POST":
+        ages = {"U", "PG", "12", "12A", "15", "18"}
+        title = request.POST.get('title')
+        age_rating = request.POST.get('age_rating')
+        duration = request.POST.get('duration')
+        trailer_desc = request.POST.get('trailer_desc')
+        if (duration.isdigit()):
+            if(age_rating in ages):
+                film = Film()
+                film.title = title
+                film.age_rating = age_rating
+                film.duration = duration
+                film.trailer_desc = trailer_desc
+                film.save()
+            else:
+                print("Invalid Age Rating")
+        else:
+            print("Duration is not a valid number")
     return render(request, 'uweflix/add_film.html', context) 
 
 def login(request):
