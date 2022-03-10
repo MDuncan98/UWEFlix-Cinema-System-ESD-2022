@@ -17,12 +17,18 @@ Viewings
 	padding-right: 15px;
     }
 
+    .transaction_list th {
+        background-color: lightgrey;
+    }
+
     h1 {
         text-align: center;
     }
 
 </style>
+    <center>
     <h1>Transaction Viewing System</h1>
+    <hr/>
     {% if transaction_list %}
         <table class="transaction_list">
             <thead>
@@ -51,8 +57,10 @@ Viewings
     {% else %}
         <p>Please select an account statement to view:</p>
     {% endif %}
+    <hr/>
     <form action="{% url 'view_accounts' %}" method="get">
         <input name="search_accounts" type="text" placeholder="Search...">
         <button type="submit" class="search btn">Search</button>
     </form>
+    </center>
 {% endblock %}
