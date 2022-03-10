@@ -1,8 +1,10 @@
 from multiprocessing import context
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse
 from django.template import ContextPopException
+from django.views.generic import ListView
 from .models import *
+from django.utils.timezone import datetime
 
 def home(request):
     return render(request, 'uweflix/index.html')
@@ -44,5 +46,19 @@ def login(request):
         #   #
     return render(request, 'uweflix/login.html')
 
-def view_accounts(request):
-    return render(request, 'uweflix/view_accounts.html')
+
+class TransactionListView(ListView):  # Logic for the View Accounts page
+    model = Transaction
+
+    def get_queryset(self):
+        query = self.request.GET.get('search_accounts')
+        object_list = Transaction.objects.filter(  # Search for specified account transactions within the last month
+            customer=query,
+            date__year = datetime.now().year,
+            date__month = datetime.now().month
+        )
+        return object_list
+
+    def get_context_data(self, **kwargs):
+        context = super(TransactionListView, self).get_context_data(**kwargs)
+        return context

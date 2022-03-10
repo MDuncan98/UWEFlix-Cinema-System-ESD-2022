@@ -10,9 +10,16 @@ class Account(models.Model):  # Database for storing user account information
         - cr = Club Representative
         - st = Student"""
 
+class Customer(Account):  # Student accounts
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    dob = models.DateField('Date of birth')
+    email = models.EmailField()
+    is_validated = models.BooleanField(default=0)
+
 class Transaction(models.Model):  # Database for storing all of the 'accounts' to be analysed by Account Manager
     # transaction_id = order/reference number
-    account = models.ForeignKey(Account, default=1, on_delete=models.SET_DEFAULT)  # User responsible for the transaction
+    customer = models.ForeignKey(Customer, default=1, on_delete=models.SET_DEFAULT)  # User responsible for the transaction
     date = models.DateField()  # Date of transaction
     cost = models.FloatField()  # Cost of transaction
     is_settled = models.BooleanField()  # Whether the transaction has been paid
@@ -42,16 +49,11 @@ class Booking(models.Model):  # Individual ticket booking database
     film = models.ForeignKey(Film, default=1, on_delete=models.SET_DEFAULT)
 
 
-class Customer(models.Model):  # Student accounts
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    dob = models.DateField('Date of birth')
-    account = models.ForeignKey(Account, default=00000000, on_delete=models.SET_DEFAULT)
-    #email = models.EmailField()
-    #password = models.CharField(max_length=50)
-
 class ClubRep(Customer):
     club_rep_num = models.CharField(max_length=50)
+
+    """def __str__(self):
+        return "%s %s" % (self.first_name, self.last_name)"""
 
 
 # Create your models here.

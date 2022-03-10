@@ -4,5 +4,55 @@
 Viewings
 {% endblock %}
 {% block content %}
-    <h1>View Accounts page</h1>
+<style>
+
+    .transaction_list {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .transaction_list th, td {
+	border: 1px solid;
+	text-align: left;
+	padding-right: 15px;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+</style>
+    <h1>Transaction Viewing System</h1>
+    {% if transaction_list %}
+        <table class="transaction_list">
+            <thead>
+                <tr>
+                    <th>Transaction #</th>
+                    <th>Date</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Cost</th>
+                    <th>Paid</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for transaction in transaction_list %}
+                <tr>
+                    <td>{{ transaction.id }}</td>
+                    <td>{{ transaction.date | date:'d M Y' }}</td>
+                    <td>{{ transaction.customer.first_name }}</td>
+                    <td>{{ transaction.customer.last_name }}</td>
+                    <td>£{{ transaction.cost }}</td>
+                    <td>{{ transaction.is_settled }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Please select an account statement to view:</p>
+    {% endif %}
+    <form action="{% url 'view_accounts' %}" method="get">
+        <input name="search_accounts" type="text" placeholder="Search...">
+        <button type="submit" class="search btn">Search</button>
+    </form>
 {% endblock %}
