@@ -16,6 +16,7 @@ class Customer(Account):  # Student accounts
     dob = models.DateField('Date of birth')
     email = models.EmailField()
     is_validated = models.BooleanField(default=0)
+    credit = models.FloatField(default=0.00)
 
 class Transaction(models.Model):  # Database for storing all of the 'accounts' to be analysed by Account Manager
     # transaction_id = order/reference number
