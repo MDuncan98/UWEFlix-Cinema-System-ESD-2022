@@ -41,7 +41,6 @@ class Film(models.Model):
 
     def __str__(self):
         return self.title
-    
 class Ticket(models.Model):  # Individual ticket booking database
     transaction = models.ForeignKey(Transaction, default=1, on_delete=models.SET_DEFAULT)
     # showing = models.ForeignKey(Showing, default=1, on_delete=models.SET_DEFAULT)  # Screen the booking is being viewed at
@@ -53,6 +52,23 @@ class ClubRep(Customer):
 
     """def __str__(self):
         return "%s %s" % (self.first_name, self.last_name)"""
+
+class Club(models.Model):
+    name = models.CharField(max_length=100)
+    card_number = models.IntegerField()
+    card_expiry_date = models.DateField()
+    discount_rate = models.IntegerField()
+
+
+class Showing(models.Model):
+    #screen = models.ForeignKey(Screen,on_delete=models.CASCADE)
+    film = models.ForeignKey(Film,on_delete=models.CASCADE)
+    time = models.DateTimeField()
+
+class Screen(models.Model):
+    #id =
+    capacity = models.IntegerField()
+    apply_covid_restrictions =  models.BooleanField()
 
 
 # Create your models here.
