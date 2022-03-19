@@ -42,12 +42,10 @@ class Film(models.Model):
     def __str__(self):
         return self.title
     
-class Booking(models.Model):  # Individual ticket booking database
+class Ticket(models.Model):  # Individual ticket booking database
     transaction = models.ForeignKey(Transaction, default=1, on_delete=models.SET_DEFAULT)
-    # screen = models.ForeignKey(Screen, default=1, on_delete=models.SET_DEFAULT)  # Screen the booking is being viewed at
-    seat_number = models.CharField(max_length=3) # E.G. 1A, 10B, etc.
-    date_time = models.DateTimeField()  # Date and Time of the showing
-    film = models.ForeignKey(Film, default=1, on_delete=models.SET_DEFAULT)
+    # showing = models.ForeignKey(Showing, default=1, on_delete=models.SET_DEFAULT)  # Screen the booking is being viewed at
+    ticket_type = models.CharField(max_length=7)
 
 
 class ClubRep(Customer):

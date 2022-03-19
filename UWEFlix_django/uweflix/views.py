@@ -46,6 +46,9 @@ def login(request):
         #   #
     return render(request, 'uweflix/login.html')
 
+def payment(request):
+    return render(request, 'uweflix/payment.html')
+
 
 class TransactionListView(ListView):  # Logic for the View Accounts page
     model = Transaction
