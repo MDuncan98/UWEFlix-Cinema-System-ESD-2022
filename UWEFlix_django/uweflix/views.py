@@ -58,11 +58,16 @@ def payment(request): # Will also take showing_id as a param once showing page i
         form = PaymentForm(request.POST)
         if form.is_valid():
             print("Success")
+            return render(request, "uweflix/thanks.html")
             # Payment Logic will go here once prerequestites are completed
             #return redirect('uweflix/thanks.html')
         else:
-            form = PaymentForm()
+            return render(request, 'uweflix/payment.html', context={'form':form, "show_showing": showing})
+            
     return render(request, 'uweflix/payment.html', context)
+
+def thanks(request):
+    render(request, "uweflix/thanks.html")
 
 """class PaymentView(TemplateView):
     model = Showing

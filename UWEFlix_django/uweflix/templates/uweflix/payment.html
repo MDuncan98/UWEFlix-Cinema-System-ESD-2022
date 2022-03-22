@@ -7,21 +7,15 @@ Payment
 <style>
     form {
         display: inline-block;
-        outline: 1px solid lightgrey;
-        padding: 10px;
-        padding-right: 20px;
-        padding-top: 10px;
-        padding-bottom: 10px;
     }
 
     h1 {
         text-align: center;
     }
 
-    h2, h3, h5, p, form {
+    h2, h3, h5, p, input {
         padding-left: 15px;
     }
-
 
 </style>
 <br/>
@@ -30,6 +24,7 @@ Payment
 <body>
     <h2>Order summary:</h2>
     <hr/>
+
     <h3>Film:</h3>
     {% if show_showing %}
         {% for showing in show_showing %}
@@ -44,15 +39,16 @@ Payment
         <h3>Showing:</h3>
         <p>Screen {{ showing.screen.id }}<br/>{{ showing.time | date:'j M Y' }} at {{ showing.time | time:'G:i'}}</p>
         {% endfor %}
+        <hr/>
     {% else %}
     <p>No showing information!</p>
     {% endif %}
     <div class="form">
         <form action="{% url 'payment' %}" method="post">
             {% csrf_token %}
-            {{ form }}
-            <br/><br/>
-            <input type="submit" value="Book">
+            {{ form.as_p }}
+            <br/>
+            <input class="btn btn-secondary" type="submit" value="Book">
         </form>
     </div>
 </body>

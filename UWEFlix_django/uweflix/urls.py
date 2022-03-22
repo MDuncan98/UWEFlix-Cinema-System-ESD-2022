@@ -15,5 +15,6 @@ urlpatterns = [
     path("add_film/", views.add_film, name="add_film"),
     path("login/", views.login, name="login"),
     path("payment/", views.payment, name="payment"),
-    path("view_accounts/", transaction_list_view, name="view_accounts")
+    path("view_accounts/", transaction_list_view, name="view_accounts"),
+    path("thanks/", views.thanks, name="thanks"),
 ]
