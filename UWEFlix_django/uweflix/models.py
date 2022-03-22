@@ -41,17 +41,20 @@ class Film(models.Model):
 
     def __str__(self):
         return self.title
+
+class Screen(models.Model):
+    capacity = models.IntegerField()
+    apply_covid_restrictions =  models.BooleanField()
+
+class Showing(models.Model):
+    screen = models.ForeignKey(Screen, default=1, on_delete=models.CASCADE)
+    film = models.ForeignKey(Film,on_delete=models.CASCADE)
+    time = models.DateTimeField()
+
 class Ticket(models.Model):  # Individual ticket booking database
     transaction = models.ForeignKey(Transaction, default=1, on_delete=models.SET_DEFAULT)
-    # showing = models.ForeignKey(Showing, default=1, on_delete=models.SET_DEFAULT)  # Screen the booking is being viewed at
+    showing = models.ForeignKey(Showing, default=1, on_delete=models.SET_DEFAULT)  # Screen the booking is being viewed at
     ticket_type = models.CharField(max_length=7)
-
-
-class ClubRep(Customer):
-    club_rep_num = models.CharField(max_length=50)
-
-    """def __str__(self):
-        return "%s %s" % (self.first_name, self.last_name)"""
 
 class Club(models.Model):
     name = models.CharField(max_length=100)
@@ -59,16 +62,16 @@ class Club(models.Model):
     card_expiry_date = models.DateField()
     discount_rate = models.IntegerField()
 
+class ClubRep(Customer):
+    club = models.ForeignKey(Club, default=1, on_delete=models.CASCADE)
+    club_rep_num = models.CharField(max_length=8)
 
-class Showing(models.Model):
-    #screen = models.ForeignKey(Screen,on_delete=models.CASCADE)
-    film = models.ForeignKey(Film,on_delete=models.CASCADE)
-    time = models.DateTimeField()
+    """def __str__(self):
+        return "%s %s" % (self.first_name, self.last_name)"""
 
-class Screen(models.Model):
-    #id =
-    capacity = models.IntegerField()
-    apply_covid_restrictions =  models.BooleanField()
+
+
+
 
 
 # Create your models here.

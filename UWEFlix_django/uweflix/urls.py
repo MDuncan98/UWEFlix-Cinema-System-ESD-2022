@@ -1,12 +1,13 @@
 from django.urls import path
 from uweflix import views
-from uweflix.models import Transaction
+from uweflix.models import *
 
 transaction_list_view = views.TransactionListView.as_view(
     queryset = Transaction.objects.order_by("-date"),
     context_object_name="transaction_list",
     template_name="uweflix/view_accounts.html",
 )
+
 
 urlpatterns = [
     path("", views.home, name="home"),

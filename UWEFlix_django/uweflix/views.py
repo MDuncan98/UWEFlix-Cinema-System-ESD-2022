@@ -2,9 +2,10 @@ from multiprocessing import context
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse
 from django.template import ContextPopException
-from django.views.generic import ListView
+from django.views.generic import *
 from .models import *
 from django.utils.timezone import datetime
+from .forms import PaymentForm
 
 def home(request):
     return render(request, 'uweflix/index.html')
@@ -46,9 +47,41 @@ def login(request):
         #   #
     return render(request, 'uweflix/login.html')
 
-def payment(request):
-    return render(request, 'uweflix/payment.html')
+def payment(request): # Will also take showing_id as a param once showing page is completed!
+    showing = Showing.objects.filter(id=1)
+    form = PaymentForm()
+    context = {
+        "show_showing": showing,
+        "form": form
+    }
+    if request.method == 'POST':
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            print("Success")
+            # Payment Logic will go here once prerequestites are completed
+            #return redirect('uweflix/thanks.html')
+        else:
+            form = PaymentForm()
+    return render(request, 'uweflix/payment.html', context)
 
+"""class PaymentView(TemplateView):
+    model = Showing
+    template_name = "uweflix/payment.html"
+    form_class = PaymentForm
+    success_url = ""
+
+    def form_valid(self, form):
+        print("Success")
+        return super().form_valid(form)
+
+    def get_queryset(self):
+        object_list = Showing.objects.filter(id=1)
+        return object_list
+
+    def get_context_data(self, **kwargs):
+        context = super(PaymentView, self).get_context_data(**kwargs)
+        context['showing'] = Showing.objects.filter(id=1)
+        return context"""
 
 class TransactionListView(ListView):  # Logic for the View Accounts page
     model = Transaction

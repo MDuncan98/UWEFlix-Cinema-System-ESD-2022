@@ -4,6 +4,56 @@
 Payment
 {% endblock %}
 {% block content %}
+<style>
+    form {
+        display: inline-block;
+        outline: 1px solid lightgrey;
+        padding: 10px;
+        padding-right: 20px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    h2, h3, h5, p, form {
+        padding-left: 15px;
+    }
 
 
+</style>
+<br/>
+<h1>Confirm your Booking</h1>
+<br/>
+<body>
+    <h2>Order summary:</h2>
+    <hr/>
+    <h3>Film:</h3>
+    {% if show_showing %}
+        {% for showing in show_showing %}
+        <p>
+           <b>{{ showing.film.title }}</b><br/>
+           Duration: {{ showing.film.duration }} minutes<br/>
+           Age rating: {{ showing.film.age_rating }}
+           {% if showing.film.age_rating == '18' %}
+                (Please bring ID with you to verify your age!)
+           {% endif %}
+        </p>
+        <h3>Showing:</h3>
+        <p>Screen {{ showing.screen.id }}<br/>{{ showing.time | date:'j M Y' }} at {{ showing.time | time:'G:i'}}</p>
+        {% endfor %}
+    {% else %}
+    <p>No showing information!</p>
+    {% endif %}
+    <div class="form">
+        <form action="{% url 'payment' %}" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <br/><br/>
+            <input type="submit" value="Book">
+        </form>
+    </div>
+</body>
 {% endblock %}
