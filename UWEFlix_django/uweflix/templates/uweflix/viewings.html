@@ -11,7 +11,7 @@ Viewings
         <div class="box-element film">
             <h6><strong>{{film.title}}</strong></h6>
             <hr>
-            <button class="btn btn-outline-secondary add-btn">Book</button>
+            <a class="btn btn-outline-secondary add-btn" href="{% url 'showings' %}">Book</a>
         </div>
     </div>
     {% endfor %}
