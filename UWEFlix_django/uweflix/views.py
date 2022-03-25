@@ -3,9 +3,16 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse
 from django.template import ContextPopException
 from django.views.generic import *
+
+#from uweflix.decorators import unauthenticated_user
 from .models import *
 from django.utils.timezone import datetime
 from .forms import PaymentForm
+#from .decorators import unauthenticated_user
+#from django.contrib.auth import authenticate, login, logout
+#from django.contrib.auth.models import Group
+#from django.contrib import messages
+
 
 def home(request):
     return render(request, 'uweflix/index.html')
@@ -13,7 +20,7 @@ def home(request):
 def viewings(request):
     films = Film.objects.all()
     context = {'films':films}
-    return render(request, 'uweflix/viewings.html', context)   
+    return render(request, 'uweflix/viewings.html', context)
 
 def add_film(request):
     context = {}
@@ -37,15 +44,31 @@ def add_film(request):
             print("Duration is not a valid number")
     return render(request, 'uweflix/add_film.html', context) 
 
+#@unauthenticated_user
 def login(request):
-    if request.method == "POST":
-        request.POST.get('username') #Gets Username
-        request.POST.get('password') # Gets Password
-        # IF account_type = 'cm'
-            #redirect to add film page
-        # ELIF ... 'am'
-        #   #
-    return render(request, 'uweflix/login.html')
+    if request.method == 'POST':
+        un = request.POST['username'] #Gets Username
+        pw = request.POST['password'] #Gets Password
+        try:
+            acc = Account.objects.get(username=un)#Get account from database
+            if (acc.password == pw): #If entered password matches one from account object
+                if (acc.account_type == 'cm'): # Cinema Manager
+                    return render(request, 'uweflix/add_film.html')
+                if (acc.account_type == 'am'): # Accounts Manager
+                    return render(request, 'uweflix/view_accounts.html')
+                if (acc.account_type == 'cr'): # Cinema Manager
+                    return render(request, 'uweflix/viewings.html')
+                if (acc.account_type == 'st'): # Student
+                    return render(request, 'uweflix/viewings.html')
+        except:
+            #More useful error message to be shown to user can be added
+            print("error")
+
+    return render(request, "uweflix/logIn.html")
+
+def userpage(request):
+    context = {}
+    return render(request, 'uweflix/user.html', context)
 
 def payment(request): # Will also take showing_id as a param once showing page is completed!
     showing = Showing.objects.filter(id=1)
@@ -63,7 +86,7 @@ def payment(request): # Will also take showing_id as a param once showing page i
             #return redirect('uweflix/thanks.html')
         else:
             return render(request, 'uweflix/payment.html', context={'form':form, "show_showing": showing})
-            
+
     return render(request, 'uweflix/payment.html', context)
 
 def thanks(request):

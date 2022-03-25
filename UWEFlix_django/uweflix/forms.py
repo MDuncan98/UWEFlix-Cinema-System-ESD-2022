@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 from django import forms
 from uweflix.models import *
 from django.core.exceptions import ValidationError
@@ -23,8 +22,8 @@ class PaymentForm(forms.Form):
         MinValueValidator(0)
     ],required=False)
     payment_choices = [(None, 'Select an option:'),
-                       ('credit', 'Pay with Credit'), 
-                       ('nopay', 'Pay at Cinema on the day'), 
+                       ('credit', 'Pay with Credit'),
+                       ('nopay', 'Pay at Cinema on the day'),
                        ('tab', 'Add to monthly bill (Club Reps only)')]
     payment_options = forms.ChoiceField(choices=payment_choices, widget=forms.Select(attrs={'class': 'form-field'}))
     discount_code = forms.CharField(required=False, max_length=8, widget=forms.TextInput(attrs={'class': 'form-field'}))
