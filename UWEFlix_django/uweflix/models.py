@@ -20,7 +20,7 @@ class Customer(Account):  # Student accounts
 
 class Transaction(models.Model):  # Database for storing all of the 'accounts' to be analysed by Account Manager
     # transaction_id = order/reference number
-    customer = models.ForeignKey(Customer, default=1, on_delete=models.SET_DEFAULT)  # User responsible for the transaction
+    customer = models.ForeignKey(Customer, blank=True, null=True, default=None, on_delete=models.SET_DEFAULT)  # User responsible for the transaction
     date = models.DateField()  # Date of transaction
     cost = models.FloatField()  # Cost of transaction
     is_settled = models.BooleanField()  # Whether the transaction has been paid
@@ -50,6 +50,7 @@ class Showing(models.Model):
     screen = models.ForeignKey(Screen, default=1, on_delete=models.CASCADE)
     film = models.ForeignKey(Film,on_delete=models.CASCADE)
     time = models.DateTimeField()
+    remaining_tickets = models.IntegerField(default=150)  # NEEDS TO BE ASSIGNED TO THE SCREEN CAPACITY SOMEHOW!
 
 class Ticket(models.Model):  # Individual ticket booking database
     transaction = models.ForeignKey(Transaction, default=1, on_delete=models.SET_DEFAULT)

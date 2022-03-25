@@ -43,14 +43,27 @@ h1,h2,h3,h4,h5,h6{
 	width: 100px;
 }
 
+#id_adult_tickets, #id_student_tickets, #id_child_tickets, #id_total_cost {
+	width:75px;
+	float: right;
+}
+
 .form-field{
 	width:250px;
 	display: inline-block;
 	padding: 5px;
 }
+.form-area {
+	width: 500px;
+}
 
-
-
+.form-group {
+	height:50px;
+	width: 450px;
+	margin: auto;
+	display: inline-block;
+	padding: 10px;
+}
 
 
 
