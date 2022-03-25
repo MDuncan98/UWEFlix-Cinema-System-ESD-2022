@@ -39,54 +39,59 @@ def add_film(request):
 
 def login(request):
     if request.method == "POST":
-        request.POST.get('username') #Gets Username
-        request.POST.get('password') # Gets Password
-        # IF account_type = 'cm'
-            #redirect to add film page
-        # ELIF ... 'am'
-        #   #
+        un = request.POST.get('username') #Gets Username
+        pw = request.POST.get('password') # Gets Password
+        try:
+            acc = Account.objects.get(username=un)  # Get account from database
+            if (acc.password == pw):  # If entered password matches one from account object
+                if (acc.account_type == 'cm'):  # Cinema Manager
+                    return render(request, 'uweflix/add_film.html')
+                if (acc.account_type == 'am'):  # Accounts Manager
+                    return render(request, 'uweflix/view_accounts.html')
+                if (acc.account_type == 'cr'):  # Cinema Manager
+                    return render(request, 'uweflix/viewings.html')
+                if (acc.account_type == 'st'):  # Student
+                    return render(request, 'uweflix/viewings.html')
+        except:
+            #More useful error message to be shown to user can be added
+            print("error")
     return render(request, 'uweflix/login.html')
 
 def payment(request): # Will also take showing_id as a param once showing page is completed!
     showing = Showing.objects.filter(id=1)
+    customer = Customer.objects.filter(account_ptr_id=5)
     form = PaymentForm()
     context = {
         "show_showing": showing,
+        "customer_data": customer,
         "form": form
     }
+        #   PROCEED with payment function:
+        #   tr = NEW Transaction object, date = today, customer = cust, cost = cost
+        #   IF child/student/adult tickets > 0
+        #       FOR each ticket type
+        #           CREATE new ticket object, ticket_type x, transaction tr
     if request.method == 'POST':
         form = PaymentForm(request.POST)
         if form.is_valid():
             print("Success")
-            return render(request, "uweflix/thanks.html")
+            # GET Account data
+            # IF paying with credit
+            #   IF acc_balance >= total cost
+            #       PROCEED with payment (true)
+            #   ELSE
+            #       ERROR(Not enough credit!)
+            # ELIF paying later (club rep), or paying on the day
+            #   PROCEED with payment (false)
             # Payment Logic will go here once prerequestites are completed
-            #return redirect('uweflix/thanks.html')
+            return render(request, "uweflix/thanks.html")
         else:
-            return render(request, 'uweflix/payment.html', context={'form':form, "show_showing": showing})
+            return render(request, 'uweflix/payment.html', context={'form':form, "show_showing": showing, "customer_data": customer})
             
     return render(request, 'uweflix/payment.html', context)
 
 def thanks(request):
     render(request, "uweflix/thanks.html")
-
-"""class PaymentView(TemplateView):
-    model = Showing
-    template_name = "uweflix/payment.html"
-    form_class = PaymentForm
-    success_url = ""
-
-    def form_valid(self, form):
-        print("Success")
-        return super().form_valid(form)
-
-    def get_queryset(self):
-        object_list = Showing.objects.filter(id=1)
-        return object_list
-
-    def get_context_data(self, **kwargs):
-        context = super(PaymentView, self).get_context_data(**kwargs)
-        context['showing'] = Showing.objects.filter(id=1)
-        return context"""
 
 class TransactionListView(ListView):  # Logic for the View Accounts page
     model = Transaction
