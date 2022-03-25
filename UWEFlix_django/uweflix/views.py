@@ -52,6 +52,8 @@ def login(request):
         try:
             acc = Account.objects.get(username=un)#Get account from database
             if (acc.password == pw): #If entered password matches one from account object
+                request.session['username'] = un
+                request.session['accountType'] = acc.account_type
                 if (acc.account_type == 'cm'): # Cinema Manager
                     return render(request, 'uweflix/add_film.html')
                 if (acc.account_type == 'am'): # Accounts Manager
@@ -91,6 +93,21 @@ def payment(request): # Will also take showing_id as a param once showing page i
 
 def thanks(request):
     render(request, "uweflix/thanks.html")
+
+def topup(request):
+    if 'accountType' in request.session:
+        if request.session['accountType'] == "cr":
+            if request.method == 'POST':
+                topUpValue = request.POST.get("topUpValue")
+                loggedInRep = ClubRep.objects.get(username = request.session['username'])
+                loggedInRep.credit = loggedInRep.credit + round(float(topUpValue), 2)
+                loggedInRep.save()
+            return render(request, "uweflix/topup.html")
+        else:
+            
+            return redirect('home')    
+    else:
+        return redirect('home')
 
 """class PaymentView(TemplateView):
     model = Showing
