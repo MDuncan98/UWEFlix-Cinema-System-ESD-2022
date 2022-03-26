@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.template import ContextPopException
 from django.views.generic import *
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 #from uweflix.decorators import unauthenticated_user
 from .models import *
 from django.utils.timezone import datetime
@@ -42,7 +43,19 @@ def add_film(request):
                 print("Invalid Age Rating")
         else:
             print("Duration is not a valid number")
-    return render(request, 'uweflix/add_film.html', context) 
+    return render(request, 'uweflix/add_film.html', context)
+
+
+def registerPage(request):
+    form = UserCreationForm()
+
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+    context = {'form':form}
+    return render(request, 'uweflix/register.html', context)
 
 #@unauthenticated_user
 def login(request):

@@ -16,6 +16,7 @@ urlpatterns = [
     path("login/", views.login, name="login"),
     path("topup/", views.topup, name="topup"),
     #path("logOut/", views.logOut, name="logOut"),
+    path("register/", views.registerPage, name="registerPage"),
     path("payment/", views.payment, name="payment"),
     path("view_accounts/", transaction_list_view, name="view_accounts"),
     path("thanks/", views.thanks, name="thanks"),
