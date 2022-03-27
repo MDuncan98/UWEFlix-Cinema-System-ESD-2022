@@ -78,6 +78,17 @@ h1,h2,h3,h4,h5,h6{
 	color: red;
 }
 
+.topnav-right {
+	float: right;
+}
+
+.topnav-right a {
+	color: #f2f2f2;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+	font-size: 17px;
+  }
 
 
 
