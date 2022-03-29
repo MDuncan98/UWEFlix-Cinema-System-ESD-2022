@@ -14,6 +14,12 @@ urlpatterns = [
     path("viewings/", views.viewings, name="viewings"),
     path("add_film/", views.add_film, name="add_film"),
     path("login/", views.login, name="login"),
+    path("topup/", views.topup, name="topup"),
+    #path("logOut/", views.logOut, name="logOut"),
+    path("register/", views.registerPage, name="registerPage"),
     path("payment/", views.payment, name="payment"),
-    path("view_accounts/", transaction_list_view, name="view_accounts")
+    path("view_accounts/", transaction_list_view, name="view_accounts"),
+    path("thanks/", views.thanks, name="thanks"),
+    path("error/", views.error, name="error"),
+    path("user/", views.userpage, name="user-page"),
 ]
