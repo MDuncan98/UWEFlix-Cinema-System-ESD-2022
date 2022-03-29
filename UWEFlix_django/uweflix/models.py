@@ -1,21 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import *
 
-class Account(models.Model):  # Database for storing user account information
-    username = models.CharField(max_length=100)
-    password = models.CharField(max_length=50)
-    account_type = models.CharField(max_length=2)
-    """Account types:
-        - cm = Cinema Manager
-        - am = Accounts Manager
-        - cr = Club Representative
-        - st = Student"""
+class User(AbstractUser):
+    pass
 
-class Customer(Account):  # Student accounts
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
+class Customer(models.Model):  # Student accounts
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     dob = models.DateField('Date of birth')
-    email = models.EmailField()
-    is_validated = models.BooleanField(default=0)
     credit = models.FloatField(default=0.00)
 
 class Transaction(models.Model):  # Database for storing all of the 'accounts' to be analysed by Account Manager
@@ -50,6 +41,7 @@ class Showing(models.Model):
     screen = models.ForeignKey(Screen, default=1, on_delete=models.CASCADE)
     film = models.ForeignKey(Film,on_delete=models.CASCADE)
     time = models.DateTimeField()
+    #apply_covid_restrictions, maybe a global setting?
     remaining_tickets = models.IntegerField(default=150)  # NEEDS TO BE ASSIGNED TO THE SCREEN CAPACITY SOMEHOW!
 
 class Ticket(models.Model):  # Individual ticket booking database
@@ -66,9 +58,6 @@ class Club(models.Model):
 class ClubRep(Customer):
     club = models.ForeignKey(Club, default=1, on_delete=models.CASCADE)
     club_rep_num = models.CharField(max_length=8)
-
-    """def __str__(self):
-        return "%s %s" % (self.first_name, self.last_name)"""
 
 
 

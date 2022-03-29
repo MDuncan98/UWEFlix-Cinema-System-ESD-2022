@@ -3,10 +3,21 @@ from uweflix.models import *
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.safestring import mark_safe
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 """class EnterClubRepForm(forms.ModelForm):
     class Meta:
         model = ClubRep"""
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('username',)
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ('username',)
 
 class PaymentForm(forms.Form):
     adult_tickets = forms.IntegerField(validators=[

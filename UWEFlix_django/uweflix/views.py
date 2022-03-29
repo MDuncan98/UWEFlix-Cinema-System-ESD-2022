@@ -8,11 +8,13 @@ from django.contrib.auth.forms import UserCreationForm
 #from uweflix.decorators import unauthenticated_user
 from .models import *
 from django.utils.timezone import datetime
-from .forms import PaymentForm
+from .forms import *
 #from .decorators import unauthenticated_user
 #from django.contrib.auth import authenticate, login, logout
 #from django.contrib.auth.models import Group
 #from django.contrib import messages
+
+
 
 
 def home(request):
@@ -47,10 +49,10 @@ def add_film(request):
 
 
 def registerPage(request):
-    form = UserCreationForm()
+    form = CustomUserCreationForm()
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
 
@@ -175,15 +177,17 @@ def error(request):
 def topup(request):
     if 'accountType' in request.session:
         if request.session['accountType'] == "cr":
-            if request.method == 'POST':
-                topUpValue = request.POST.get("topUpValue")
-                loggedInRep = ClubRep.objects.get(username = request.session['username'])
-                loggedInRep.credit = loggedInRep.credit + round(float(topUpValue), 2)
-                loggedInRep.save()
-            return render(request, "uweflix/topup.html")
+            userObject = ClubRep
+        elif request.session['accountType'] == "st":
+            userObject = Customer
         else:
-            
-            return redirect('home')    
+            return redirect('home') 
+        if request.method == 'POST':
+            topUpValue = request.POST.get("topUpValue")
+            loggedInRep = userObject.objects.get(username = request.session['username'])
+            loggedInRep.credit = loggedInRep.credit + round(float(topUpValue), 2)
+            loggedInRep.save()
+        return render(request, "uweflix/topup.html")   
     else:
         return redirect('home')
 
