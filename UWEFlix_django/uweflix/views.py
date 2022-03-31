@@ -1,4 +1,5 @@
 from multiprocessing import context
+from sys import float_repr_style
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse
 from django.template import ContextPopException
@@ -206,3 +207,17 @@ class TransactionListView(ListView):  # Logic for the View Accounts page
     def get_context_data(self, **kwargs):
         context = super(TransactionListView, self).get_context_data(**kwargs)
         return context
+
+def transaction_test(request):
+    if request.method == "GET":
+        customer = Customer.objects.get(id=1)
+        transaction = Transaction.newTransaction(customer, 15.00, False)
+        print(f"Transaction number {transaction.id} created.")
+        transaction2 = Transaction.getTransaction(transaction.id)
+        print(f"Transaction number {transaction2.id} retrieved.")
+        print(f"Old Transaction details: {transaction2.cost}, {transaction2.is_settled}.")
+        transaction2 = Transaction.updateTransaction(transaction2.id, 20.00, True)
+        print(f"New Transaction details: {transaction2.cost}, {transaction2.is_settled}.")
+        Transaction.deleteTransaction(transaction2.id)
+        print(f"Transaction deleted.")
+    return render(request, "uweflix/transaction_test.html")

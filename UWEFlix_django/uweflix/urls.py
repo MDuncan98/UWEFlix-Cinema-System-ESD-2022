@@ -22,4 +22,5 @@ urlpatterns = [
     path("thanks/", views.thanks, name="thanks"),
     path("error/", views.error, name="error"),
     path("user/", views.userpage, name="user-page"),
+    path("transaction_test/", views.transaction_test, name="transaction_test"),
 ]

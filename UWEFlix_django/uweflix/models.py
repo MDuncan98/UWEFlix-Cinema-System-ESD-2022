@@ -1,5 +1,8 @@
+from datetime import date
+from xmlrpc.client import boolean
 from django.db import models
 from django.contrib.auth.models import *
+from django.utils.timezone import datetime
 
 class User(AbstractUser):
     pass
@@ -10,11 +13,51 @@ class Customer(models.Model):  # Student accounts
     credit = models.FloatField(default=0.00)
 
 class Transaction(models.Model):  # Database for storing all of the 'accounts' to be analysed by Account Manager
-    # transaction_id = order/reference number
     customer = models.ForeignKey(Customer, blank=True, null=True, default=None, on_delete=models.SET_DEFAULT)  # User responsible for the transaction
     date = models.DateField()  # Date of transaction
     cost = models.FloatField()  # Cost of transaction
     is_settled = models.BooleanField()  # Whether the transaction has been paid
+
+    def newTransaction(cust, cost, is_paid): #CREATE
+        try:
+            transaction = Transaction.objects.create(customer=cust, date=datetime.today(), cost=cost, is_settled=is_paid)
+            return transaction
+        except:
+            print("Transaction object could not be created.")
+
+    def getTransaction(id): #READ
+        try:
+            transaction = Transaction.objects.get(id=id)
+            return transaction
+        except:
+            print("No transaction exists with that transaction ID.")
+
+    def updateTransaction(id, *transaction_data): #UPDATE
+        try:
+            for data_item in transaction_data:
+                if isinstance(data_item, Customer):
+                    Transaction.objects.filter(pk=id).update(customer=data_item)
+                elif isinstance(data_item, date):
+                    Transaction.objects.filter(pk=id).update(date=data_item)
+                elif isinstance(data_item, float):
+                    Transaction.objects.filter(pk=id).update(cost=data_item)
+                elif isinstance(data_item, bool):
+                    Transaction.objects.filter(pk=id).update(is_settled=data_item)
+                else:
+                    print(f"Data item {data_item} does not conform to any of the required input types." +
+                    "\nThis value could not be updated.")
+            return Transaction.objects.get(id=id)
+        except:
+            print("An error occurred when updating this object.")
+
+    def deleteTransaction(id): #DELETE
+        try:
+            transaction = Transaction.objects.get(id=id)
+            transaction.delete()
+        except:
+            print("This transaction does not exist, or had an issue being deleted.")
+
+         
 
 class Film(models.Model):
     title = models.CharField(max_length=100)
