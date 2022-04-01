@@ -1,3 +1,4 @@
+from tokenize import String
 from django.db import models
 
 class Account(models.Model):  # Database for storing user account information
@@ -46,6 +47,38 @@ class Screen(models.Model):
     capacity = models.IntegerField()
     apply_covid_restrictions =  models.BooleanField()
 
+    def newScreen(seats, covidRestrictions): #Create
+        try:
+            screen = Screen.objects.create(capacity=seats, apply_covid_restrictions=covidRestrictions)
+            return screen
+        except:
+            print("Screen cannot be created, perhaps you are missing some parameters?")
+
+    def getScreen(id): #Read
+        try:
+            screen = Screen.objects.get(id=id)
+            return screen
+        except:
+            print("Screen cannot be found, perhaps you have entered an incorrect id?")
+
+    def updateScreen(id, fieldToEdit): #Update
+        try:
+            for field in fieldToEdit:
+                if isinstance(field, int):
+                    Screen.objects.filter(id=id).update(capacity=field)
+                elif isinstance(field, bool):
+                    Screen.objects.filter(id=id).update(apply_covid_restrictions=field)
+            return Screen.objects.get(id=id)
+        except:
+            print("Screen cannot be found, perhaps you have entered an invalid field type?")
+
+    def removeScreen(id): #Delete
+        try:
+            screen = Screen.objects.get(id=id)
+            screen.delete()
+        except:
+            print("Screen cannot be found, perhaps you have entered an incorrect id?")
+
 class Showing(models.Model):
     screen = models.ForeignKey(Screen, default=1, on_delete=models.CASCADE)
     film = models.ForeignKey(Film,on_delete=models.CASCADE)
@@ -56,6 +89,41 @@ class Ticket(models.Model):  # Individual ticket booking database
     transaction = models.ForeignKey(Transaction, default=1, on_delete=models.SET_DEFAULT)
     showing = models.ForeignKey(Showing, default=1, on_delete=models.SET_DEFAULT)  # Screen the booking is being viewed at
     ticket_type = models.CharField(max_length=7)
+
+    def newTicket(trans, show, type): #Create
+        try:
+            ticket = Ticket.objects.create(transaction=trans, showing=show, ticket_type=type)
+            return ticket
+        except:
+            print("Ticket cannot be created, perhaps you are missing a parameter?")
+
+    def getTicket(id): #Read
+        try:
+            ticket = Ticket.objects.get(id=id)
+            return ticket
+        except:
+            print("Ticket cannot be found, perhaps you have entered an incorrect id?")
+
+    def updateTicket(id, fieldToEdit): #Update
+        try:
+            for field in fieldToEdit:
+                if isinstance(field, Transaction):
+                    Ticket.objects.filter(id=id).update(transaction=field)
+                elif isinstance(field, Showing):
+                    Ticket.objects.filter(id=id).update(showing=field)
+                elif isinstance(field, String):
+                    Ticket.objects.filter(id=id).update(ticket_type=field)
+            return Ticket.objects.get(id=id)
+        except:
+            print("Ticket cannot be updated, perhaps you have entered an invalid field type?")
+
+    def removeTicket(id): #Delete
+        try:
+            ticket = Ticket.objects.get(id=id)
+            ticket.delete()
+        except:
+            print("Ticket cannot be found, perhaps you have entered an invalid id?")
+
 
 class Club(models.Model):
     name = models.CharField(max_length=100)
