@@ -3,6 +3,7 @@ from xmlrpc.client import boolean
 from django.db import models
 from django.contrib.auth.models import *
 from django.utils.timezone import datetime
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 class User(AbstractUser):
     pass
@@ -98,9 +99,13 @@ class Club(models.Model):
     card_expiry_date = models.DateField()
     discount_rate = models.IntegerField()
 
-class ClubRep(Customer):
+    def __str__(self):
+        return self.name
+
+class ClubRep(models.Model):
     club = models.ForeignKey(Club, default=1, on_delete=models.CASCADE)
-    club_rep_num = models.CharField(max_length=8)
+    club_rep_num = models.CharField(max_length=4)
+
 
 
 

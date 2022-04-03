@@ -21,6 +21,9 @@ from .forms import *
 def home(request):
     return render(request, 'uweflix/index.html')
 
+def am_home(request):
+    return render(request, 'uweflix/am_home.html')
+
 def viewings(request):
     films = Film.objects.all()
     context = {'films':films}
@@ -60,13 +63,35 @@ def registerPage(request):
     context = {'form':form}
     return render(request, 'uweflix/register.html', context)
 
+def register_clubrep(request):
+    userForm = CustomUserCreationForm()
+    crForm = RegisterClubRepForm()
+    context = {'user_form': userForm,
+               'cr_form': crForm}
+    if request.method == "POST":
+        userForm = CustomUserCreationForm(request.POST)
+        crForm = RegisterClubRepForm(request.POST)
+        if userForm.is_valid():
+            if crForm.is_valid():
+                newUser = userForm.save()
+                club = crForm.cleaned_data['club']
+                crNum = crForm.cleaned_data['club_rep_num']
+                dob = crForm.cleaned_data['dob']
+                ClubRep.objects.create(user=newUser, club=club, club_rep_num=crNum, dob=dob)
+                print("yes")
+            else:
+                print("cr no")
+        else:
+            print("user no")
+    return render(request, 'uweflix/register_cr.html', context)
+
 #@unauthenticated_user
 def login(request):
     if request.method == 'POST':
         un = request.POST['username'] #Gets Username
         pw = request.POST['password'] #Gets Password
         try:
-            acc = Account.objects.get(username=un)#Get account from database
+            acc = User.objects.get(username=un)#Get account from database
             if (acc.password == pw): #If entered password matches one from account object
                 request.session['username'] = un
                 request.session['accountType'] = acc.account_type
@@ -84,86 +109,63 @@ def login(request):
 
     return render(request, "uweflix/logIn.html")
 
+def logout(request):
+    return render(request, 'uweflix/logout.html')
+
 def userpage(request):
     context = {}
     return render(request, 'uweflix/user.html', context)
 
 def payment(request): # Will also take showing_id as a param once showing page is completed!
     showing = Showing.objects.get(id=1)
-    customer = Customer.objects.filter(account_ptr_id=5)
+    customer = Customer.objects.filter(id=1)
     form = PaymentForm()
     context = {
         "showing": showing,
         "customer_data": customer,
         "form": form
     }
-        #   PROCEED with payment function:
-        #   tr = NEW Transaction object, date = today, customer = cust, cost = cost
-        #   IF child/student/adult tickets > 0
-        #       FOR each ticket type
-        #           CREATE new ticket object, ticket_type x, transaction tr
     if request.method == 'POST':
-        POST = request.POST.copy()
         form = PaymentForm(request.POST)
         if form.is_valid():
-            if 'accountType' in request.session:
-                #print(form.cleaned_data.get("payment_options"))
-                if (request.session['accountType'] == "st" or request.session['accountType'] == "cr") and form.cleaned_data.get("payment_options") == 'credit':
-                    #Club reps and students paying with credit
-                    user = Customer.objects.get(username=request.session['username'])
-                    total_cost = float(form["total_cost"].data)
-                    if user.credit >= total_cost:
-                        print("Transaction can be made")
+            total_cost = float(form["total_cost"].data)
+            adult_tickets = int(form["adult_tickets"].data)
+            student_tickets = int(form["student_tickets"].data)
+            child_tickets = int(form["child_tickets"].data)
+            total_tickets = adult_tickets + student_tickets + child_tickets
+            payment_option = form.cleaned_data.get("payment_options")
+            if showing.remaining_tickets < total_tickets: #If there is NOT enough tickets
+                print("Not enough tickets remaining to make this booking.")
+            else:
+                if 'accountType' in request.session:  # If signed in
+                    #print(form.cleaned_data.get("payment_options"))
+                    if (request.session['accountType'] == "st" or request.session['accountType'] == "cr"):
+                        #Club reps and students
+                        user = Customer.objects.get(username=request.session['username'])
+                    if payment_option == 'credit' and user.credit >= total_cost: # If paying with credit
                         user.credit -= total_cost
-                        adult_tickets = int(form["adult_tickets"].data)
-                        student_tickets = int(form["student_tickets"].data)
-                        child_tickets = int(form["child_tickets"].data)
-                        new_transaction = Transaction.objects.create(customer=user, date=datetime.today(), cost=total_cost, is_settled=True)
-                        for i in range(adult_tickets):
-                            Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="adult")
-                        for i in range(student_tickets):
-                            Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="student")
-                        for i in range(child_tickets):
-                            Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="child")
-                        showing.remaining_tickets -= (adult_tickets + student_tickets + child_tickets)
-                        showing.save()
                         user.save()
-                        print("Success")
-                        return render(request, "uweflix/thanks.html")
+                        paying = True
+                    elif request.session['accountType'] == "cr" and payment_option == "tab":
+                        paying = False
                     else:
                         return render(request, "uweflix/error.html")
-                elif (request.session['accountType'] == "cr" and form.cleaned_data.get("payment_options") == 'tab'):  # Club rep pay in advance
-                    user = Customer.objects.get(username=request.session['username'])
-                    total_cost = float(form["total_cost"].data)
-                    adult_tickets = int(form["adult_tickets"].data)
-                    student_tickets = int(form["student_tickets"].data)
-                    child_tickets = int(form["child_tickets"].data)
-                    new_transaction = Transaction.objects.create(customer=user, date=datetime.today(), cost=total_cost, is_settled=False)
-                    for i in range(adult_tickets):
-                        Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="adult")
-                    for i in range(student_tickets):
-                        Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="student")
-                    for i in range(child_tickets):
-                        Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="child")
-                    showing.remaining_tickets -= (adult_tickets + student_tickets + child_tickets)
-                    showing.save()
-                    user.save()
-                    print("Success")
-                    return render(request, "uweflix/thanks.html")
-                elif (form.cleaned_data.get("payment_options") == 'nopay'):  # Not working yet
-                    total_cost = float(form["total_cost"].data)
-                    adult_tickets = int(form["adult_tickets"].data)
-                    student_tickets = int(form["student_tickets"].data)
-                    child_tickets = int(form["child_tickets"].data)
-                    new_transaction = Transaction.objects.create(date=datetime.today(), cost=total_cost, is_settled=False)
-                    for i in range(adult_tickets):
-                        Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="adult")
-                    for i in range(student_tickets):
-                        Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="student")
-                    for i in range(child_tickets):
-                        Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="child")
-                    showing.remaining_tickets -= (adult_tickets + student_tickets + child_tickets)
-                    showing.save()
+                elif payment_option == "nopay":
+                    user = None
+                    paying = False
+                else:
+                    return render(request, "uweflix/error.html")
+                new_transaction = Transaction.objects.create(customer=user, date=datetime.today(), cost=total_cost, is_settled=paying)
+                for i in range(adult_tickets):
+                    Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="adult")
+                for i in range(student_tickets):
+                    Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="student")
+                for i in range(child_tickets):
+                    Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="child")
+                showing.remaining_tickets -= (adult_tickets + student_tickets + child_tickets)
+                showing.save()
+                print("Success")
+                return render(request, "uweflix/thanks.html")
         else:
             return render(request, 'uweflix/payment.html', context={'form':form, "show_showing": showing, "customer_data": customer})
             

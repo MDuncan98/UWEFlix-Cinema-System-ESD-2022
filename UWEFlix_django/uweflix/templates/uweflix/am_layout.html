@@ -17,7 +17,7 @@
     <a href="{% url 'viewings' %}" class="navbar-item">Viewings</a>
 </div> -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="{% url 'home' %}">Home</a>
+        <a class="navbar-brand" href="{% url 'accounts_home' %}">Home</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
         </button>
@@ -25,24 +25,15 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                <a class="nav-link" href="{% url 'viewings' %}">Viewings</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'add_film' %}">Add Film</a>
-                </li>
-                <li class="nav-item active">
                     <a class="nav-link" href="{% url 'view_accounts' %}">View Accounts</a>
-                </li>
+                </li>  
                 <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'topup' %}">Topup</a>
-                </li>
+                    <a class="nav-link" href="{% url 'register_clubrep' %}">Register Club Account</a>
+                </li>    
                 <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'registerPage' %}">Register</a>
-                </li>                    
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>         
             </ul>
-            <div class="form-inline my-2 my-lg-0">
-                <a href="{% url 'login' %}"class="btn btn-warning">Login</a>
-            </div>
         </div>
     </nav>
 

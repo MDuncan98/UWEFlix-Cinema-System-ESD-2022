@@ -1,2 +1,5 @@
 /.venv
+/UWEFlix_django/uweflix/__pycache__/*.pyc
+/UWEFlix_django/web_project/__pycache__/*.pyc
+*.pyc
 *.pyc

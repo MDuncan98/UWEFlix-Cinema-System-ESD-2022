@@ -19,6 +19,12 @@ class CustomUserChangeForm(UserChangeForm):
         model = User
         fields = ('username',)
 
+class RegisterClubRepForm(forms.ModelForm):
+    class Meta:
+        model = ClubRep
+        fields = ('club', 'club_rep_num', 'dob')
+    dob = forms.DateField(widget=forms.DateInput())
+
 class PaymentForm(forms.Form):
     adult_tickets = forms.IntegerField(validators=[
         MaxValueValidator(100),
