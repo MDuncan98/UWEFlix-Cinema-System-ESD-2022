@@ -168,7 +168,7 @@ def payment(request): # Will also take showing_id as a param once showing page i
                 return render(request, "uweflix/thanks.html")
         else:
             return render(request, 'uweflix/payment.html', context={'form':form, "show_showing": showing, "customer_data": customer})
-            
+
     return render(request, 'uweflix/payment.html', context)
 
 def thanks(request):
@@ -223,3 +223,36 @@ def transaction_test(request):
         Transaction.deleteTransaction(transaction2.id)
         print(f"Transaction deleted.")
     return render(request, "uweflix/transaction_test.html")
+
+#def addClub(request):#
+#    context = {}
+#    form = addClubForm(request.POST or None)
+
+#    if request.method == "POST":
+#        if form.is_valid():
+#            form.save()
+#            messages.success(request, "Club successfully registered.")
+#            return redirect('/addFilm')
+
+#    context['form'] = form
+#    return render(request, "Uweflix/addClub.html", context)
+
+#@allowed_users(allowed_roles=['cinemaManagers'])
+#def addRep(request):
+#    context = {}
+#    form = addRepForm(request.POST or None)
+
+#    if request.method == "POST":
+#        if form.is_valid():
+#            user = form.save(commit=False)
+
+#            user.save()
+
+#            user_group = Group.objects.get(name="studentReps")
+#            user.groups.add(user_group)
+
+#            messages.success(request, "Rep successfully added.")
+#            return redirect('/addRep')
+
+#    context['form'] = form
+#    return render(request, "Uweflix/addRep.html", context)

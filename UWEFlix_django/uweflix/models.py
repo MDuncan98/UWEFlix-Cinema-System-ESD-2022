@@ -3,7 +3,6 @@ from xmlrpc.client import boolean
 from django.db import models
 from django.contrib.auth.models import *
 from django.utils.timezone import datetime
-from django.core.validators import MaxValueValidator, MinValueValidator
 
 class User(AbstractUser):
     pass
@@ -58,7 +57,7 @@ class Transaction(models.Model):  # Database for storing all of the 'accounts' t
         except:
             print("This transaction does not exist, or had an issue being deleted.")
 
-         
+
 
 class Film(models.Model):
     title = models.CharField(max_length=100)
@@ -79,14 +78,62 @@ class Film(models.Model):
 
 class Screen(models.Model):
     capacity = models.IntegerField()
-    apply_covid_restrictions =  models.BooleanField()
+    apply_covid_restrictions =  models.BooleanField(False)
 
-class Showing(models.Model):
+    class Meta:
+        db_table = "Screen"
+
+    def __str__(self):
+        template = 'uweflix'
+        return template.format(self)
+class Showing(models.Model): # Database  with all showing information
     screen = models.ForeignKey(Screen, default=1, on_delete=models.CASCADE)
     film = models.ForeignKey(Film,on_delete=models.CASCADE)
     time = models.DateTimeField()
     #apply_covid_restrictions, maybe a global setting?
-    remaining_tickets = models.IntegerField(default=150)  # NEEDS TO BE ASSIGNED TO THE SCREEN CAPACITY SOMEHOW!
+    remaining_tickets = models.IntegerField(default=150)# NEEDS TO BE ASSIGNED TO THE SCREEN CAPACITY SOMEHOW!
+
+    def newShowing(screen, film, ticketsLeft, socialDis):#CREATE
+        try:
+            showing = Showing.objects.create(screen=screen, film=film, time=datetime.today, remaining_tickets=ticketsLeft, apply_covid_restrictions=False)
+            return showing
+        except:
+            print("Showing object could not be created")
+
+    def getShowing(id):#READ
+        try:
+            showing = showing.object.get(id=id)
+            return showing
+        except:
+            print("No showinf exists with that showing ID.")
+
+    def filmShowing(id, *showing_data): #UPDATE
+        try:
+            for data_item in showing_data:
+                if isinstance(data_item, Screen):
+                    Showing.objects.filter(pk=id).update(screen=data_item)
+                elif isinstance(data_item, Film):
+                    Showing.objects.filter(pk=id).update(film=data_item)
+                elif isinstance(data_item, float):
+                    Showing.object.filter(pk=id).update(time=data_item)
+                elif isinstance(data_item, int):
+                    Showing.objects.filter(pk=id).update(remaining_tickets=data_item)
+                elif isinstance(data_item, bool):
+                    Showing.objects.filter(pk=id).update(apply_covid_restrictions=False)
+                else:
+                    print(f"Data item {data_item} does not confrom to any of the  required input types." +
+                          "\nThis value could not be updated.")
+            return Showing.objects.get(id=id)
+        except:
+            print("An error occurred when updating this object.")
+
+    def deleteShowing(id): #DELETE
+        try:
+            showing = showing.objects.get(id=id)
+            showing.delete()
+        except:
+            print("This film Showing has Successfully been deleted.")
+
 
 class Ticket(models.Model):  # Individual ticket booking database
     transaction = models.ForeignKey(Transaction, default=1, on_delete=models.SET_DEFAULT)
@@ -99,13 +146,9 @@ class Club(models.Model):
     card_expiry_date = models.DateField()
     discount_rate = models.IntegerField()
 
-    def __str__(self):
-        return self.name
-
-class ClubRep(models.Model):
+class ClubRep(Customer):
     club = models.ForeignKey(Club, default=1, on_delete=models.CASCADE)
-    club_rep_num = models.CharField(max_length=4)
-
+    club_rep_num = models.CharField(max_length=8)
 
 
 
