@@ -11,9 +11,9 @@ from .models import *
 from django.utils.timezone import datetime
 from .forms import *
 #from .decorators import unauthenticated_user
-#from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout
 #from django.contrib.auth.models import Group
-#from django.contrib import messages
+from django.contrib import messages
 
 
 
@@ -90,23 +90,11 @@ def login(request):
     if request.method == 'POST':
         un = request.POST['username'] #Gets Username
         pw = request.POST['password'] #Gets Password
-        try:
-            acc = User.objects.get(username=un)#Get account from database
-            if (acc.password == pw): #If entered password matches one from account object
-                request.session['username'] = un
-                request.session['accountType'] = acc.account_type
-                if (acc.account_type == 'cm'): # Cinema Manager
-                    return render(request, 'uweflix/add_film.html')
-                if (acc.account_type == 'am'): # Accounts Manager
-                    return render(request, 'uweflix/view_accounts.html')
-                if (acc.account_type == 'cr'): # Cinema Manager
-                    return render(request, 'uweflix/viewings.html')
-                if (acc.account_type == 'st'): # Student
-                    return render(request, 'uweflix/viewings.html')
-        except:
-            #More useful error message to be shown to user can be added
-            print("error")
-
+        user = authenticate(username=un, password=pw)
+        if user is not None:
+            print("hello")
+        else:
+            messages.error(request, "Bad Credentials")
     return render(request, "uweflix/logIn.html")
 
 def logout(request):
