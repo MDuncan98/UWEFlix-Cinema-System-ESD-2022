@@ -79,11 +79,11 @@ def userpage(request):
     context = {}
     return render(request, 'uweflix/user.html', context)
 
-def payment(request): # Will also take showing_id as a param once showing page is completed!
-    showing = Showing.objects.filter(id=1)
+def payment(request, showing): # Will also take showing_id as a param once showing page is completed!
+    showing = Showing.objects.get(id=showing)
     form = PaymentForm()
     context = {
-        "show_showing": showing,
+        "showing": showing,
         "form": form
     }
     if request.method == 'POST':

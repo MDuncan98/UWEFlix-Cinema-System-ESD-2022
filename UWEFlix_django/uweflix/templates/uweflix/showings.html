@@ -43,7 +43,7 @@ Showings
                 <h6><strong>{{ showing.time | date:'j M Y' }}</strong></h6>
                 <hr>
                 <div>            
-                    <a class="btn btn-outline-secondary add-btn" href="{% url 'payment' %}">
+                    <a class="btn btn-outline-secondary add-btn" href="{% url 'payment' showing.pk %}">
                         <h6><strong>{{ showing.time | time:'G:i'}}</strong></h6>
                         <h6><strong>Screen {{showing.screen.id}}</strong></h6>
                     </a>
