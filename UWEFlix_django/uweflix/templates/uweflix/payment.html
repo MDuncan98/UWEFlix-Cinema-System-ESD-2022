@@ -40,7 +40,7 @@ Payment
         <p>There are currently <b>{{ showing.remaining_tickets }}</b> tickets available for this showing.</p>
         <hr/>
     <div class="form">
-        <form id="payment-form" action="{% url 'payment' %}" method="post">
+        <form id="payment-form" action="{% url 'payment' %}" method="post" autocomplete="off">
             {% csrf_token %}
             <div class="alert-error">
                 {{ form.non_field_errors }}

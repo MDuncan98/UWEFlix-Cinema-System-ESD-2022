@@ -1,4 +1,3 @@
-from curses import savetty
 from multiprocessing import context
 from sys import float_repr_style
 from django.shortcuts import get_object_or_404, render, redirect
@@ -147,7 +146,7 @@ def payment(request): # Will also take showing_id as a param once showing page i
                     elif request.session['accountType'] == "cr" and payment_option == "tab":
                         paying = False
                     else:
-                        return render(request, "uweflix/error.html")
+                        return redirect("/error/")
                 elif payment_option == "nopay":
                     user = None
                     paying = False
@@ -173,7 +172,7 @@ def thanks(request):
     render(request, "uweflix/thanks.html")
 
 def error(request):
-    render(request, "uweflix/payment/error.html")
+    render(request, "uweflix/error.html")
 
 def topup(request):
     if 'accountType' in request.session:

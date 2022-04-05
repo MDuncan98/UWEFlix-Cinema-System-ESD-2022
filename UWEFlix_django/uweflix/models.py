@@ -142,14 +142,28 @@ class Ticket(models.Model):  # Individual ticket booking database
 
 class Club(models.Model):
     name = models.CharField(max_length=100)
-    card_number = models.IntegerField()
-    card_expiry_date = models.DateField()
-    discount_rate = models.IntegerField()
+    #Address details
+    street_number = models.IntegerField()
+    street = models.CharField(max_length=100)
+    city = models.CharField(max_length=50)
+    post_code = models.CharField(max_length=8)
+    #Contact details
+    landline_number = models.CharField(max_length=11)
+    mobile_number = models.CharField(max_length=11)
+    email = models.EmailField()
+    #Payment details
+    card_number = models.IntegerField(blank=True, null=True)
+    card_expiry_date = models.DateField(blank=True, null=True)
+    discount_rate = models.IntegerField(blank=True, null=True)
 
 class ClubRep(Customer):
     club = models.ForeignKey(Club, default=1, on_delete=models.CASCADE)
     club_rep_num = models.CharField(max_length=8)
-
+    #"A unique Club Representative number and unique password is allocated to the
+    #Club Representative."
+    #Therefore:
+    #- Unique CR number = username (inherited from User model), ensure that username is numbers only
+    #- Unique CR password = password (inherited from User model)
 
 
 
