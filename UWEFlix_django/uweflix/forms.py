@@ -55,3 +55,16 @@ class PaymentForm(forms.Form):
 
     def __setchoices__(self, newvalue):
         self.payment_choices = newvalue
+
+#class addClubForm(forms.ModelForm):
+#    class Meta:
+#        model = Club
+#        fields = "__all__"
+
+#class addRepForm(forms.ModelForm):
+#    class Meta:
+#        model = Representative
+#        fields = "__all__"
+#        widgets = {
+#        'dob': forms.DateInput(format=('%m/%d/%Y'), attrs={'class':'form-control', 'placeholder':'Select a date', 'type':'date'}),
+#        }

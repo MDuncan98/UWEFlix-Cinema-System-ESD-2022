@@ -1,3 +1,4 @@
+from curses import savetty
 from multiprocessing import context
 from sys import float_repr_style
 from django.shortcuts import get_object_or_404, render, redirect
@@ -58,7 +59,9 @@ def registerPage(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            group=Group.objects.get(name='Student')
+            user=form.save()
+            group.user_set.add(user)
 
     context = {'form':form}
     return render(request, 'uweflix/register.html', context)
@@ -92,7 +95,14 @@ def login(request):
         pw = request.POST['password'] #Gets Password
         user = authenticate(username=un, password=pw)
         if user is not None:
-            print("hello")
+            if user.groups.filter(name='Student').exists():
+                return render (request, "uweflix/student_home.html")
+            elif user.groups.filter(name='Club Rep').exists():
+                return render (request, "uweflix/club_rep_home.html")
+            elif user.groups.filter(name='Account Manager').exists():
+                return render (request, "uweflix/am_home.html")
+            elif user.groups.filter(name='Cinema Manager').exists():
+                return render (request, "uweflix/Cinema_manager_home.html")
         else:
             messages.error(request, "Bad Credentials")
     return render(request, "uweflix/logIn.html")
