@@ -23,9 +23,10 @@ def viewings(request):
     context = {'films':films}
     return render(request, 'uweflix/viewings.html', context)
 
-def showings(request):
-    showings = Showing.objects.all().order_by('time')
-    context = {'showings':showings}
+def showings(request, film):
+    showings = Showing.objects.filter(film=film).order_by('time')
+    film = Film.objects.get(pk=film)
+    context = {'showings':showings, 'film':film}
     return render(request, 'uweflix/showings.html', context)
 
 def add_film(request):

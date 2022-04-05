@@ -29,23 +29,21 @@ Showings
     <div class="center">
         <img class="thumbnail" src="{% static 'uweflix/images/placeholder.png' %}">
         <div class="box-element film">
-            <h6><strong>Film title</strong></h6>
+            <h6><strong>{{film.title}}</strong></h6>
             <br>
-            <p>Film description</p>
-            <hr>
-            <button class="btn btn-outline-secondary add-btn">Book</button>
+            <p>{{film.trailer_desc}}</p>
         </div>
     </div>
     <div class="showings">
         <hr>
-        <h3>Showings for (film title)</h3>        
+        <h3>Showings for {{film.title}}</h3>        
         {% for showing in showings %}
         <div class ="showing-box">
             <div class="box-element film">
                 <h6><strong>{{ showing.time | date:'j M Y' }}</strong></h6>
                 <hr>
                 <div>            
-                    <a class="btn btn-outline-secondary add-btn" href="{% url 'showings' %}">
+                    <a class="btn btn-outline-secondary add-btn" href="{% url 'payment' %}">
                         <h6><strong>{{ showing.time | time:'G:i'}}</strong></h6>
                         <h6><strong>Screen {{showing.screen.id}}</strong></h6>
                     </a>

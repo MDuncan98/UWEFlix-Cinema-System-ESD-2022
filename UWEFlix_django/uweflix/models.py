@@ -1,4 +1,6 @@
+from email import charset
 from tokenize import String
+from xml.dom.minidom import CharacterData
 from django.db import models
 import datetime
 
@@ -170,6 +172,44 @@ class Club(models.Model):
     card_number = models.IntegerField()
     card_expiry_date = models.DateField()
     discount_rate = models.IntegerField()
+
+    def newClub(name, card_number, card_expiry_date, discount_rate): #Create
+        try:
+            club = Club.objects.create(name=name, card_number=card_number, card_expiry_date=card_expiry_date, discount_rate=discount_rate)
+            return club
+        except:
+            print("Club can't be created")
+
+    def getClub(id): #Read
+        try:
+            club = Club.objects.get(id=id)
+            return club
+        except:
+            print("Club can't be found")
+
+    def updateClub(id, *club_data): #Update
+        try:
+            for data_item in club_data:
+                if data_item == 'name':
+                    Club.objects.filter(id=id).update(name=data_item)
+                elif data_item == 'card_number':
+                    Club.objects.filter(id=id).update(card_number=data_item)
+                elif data_item == 'card_expiry_date':
+                    Club.objects.filter(id=id).update(card_expiry_date=data_item)
+                elif data_item == 'discount_rate':
+                    Club.objects.filter(id=id).update(discount_rate=data_item)              
+            return Club.objects.filter(id=id)                     
+        except:
+           print(f"Data item {data_item} does not conform to any of the required input types." +
+                    "\nThis value could not be updated.")
+    
+    def removeClub(id): #Delete
+        try:
+            club = Club.objects.get(id=id)
+            club.delete()
+        except:
+            print("Club can't be found, therefore can't be deleted")
+
 
 class ClubRep(Customer):
     club = models.ForeignKey(Club, default=1, on_delete=models.CASCADE)
