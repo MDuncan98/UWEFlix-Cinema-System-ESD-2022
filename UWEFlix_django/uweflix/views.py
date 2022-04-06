@@ -6,6 +6,7 @@ from django.template import ContextPopException
 from django.views.generic import *
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+import calendar
 #from uweflix.decorators import unauthenticated_user
 from .models import *
 from django.utils.timezone import datetime
@@ -16,13 +17,20 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
 
-
-
 def home(request):
     return render(request, 'uweflix/index.html')
 
 def am_home(request):
     return render(request, 'uweflix/am_home.html')
+
+def club_rep_home(request):
+    return render(request, 'uweflix/club_rep_home.html')
+
+def cinema_manager_home(request):
+    return render(request, 'uweflix/cinema_manager_home.html')
+
+def student_home(request):
+    return render(request, 'uweflix/student_home.html')
 
 def viewings(request):
     films = Film.objects.all()
@@ -54,15 +62,23 @@ def add_film(request):
 
 def registerPage(request):
     form = CustomUserCreationForm()
-
+    customer_form = RegisterStudentForm()
+    context = {
+        'form': form,
+        'customer_form': customer_form
+    }
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
+        customer_form = RegisterStudentForm(request.POST)
         if form.is_valid():
-            group=Group.objects.get(name='Student')
-            user=form.save()
-            group.user_set.add(user)
-
-    context = {'form':form}
+            if customer_form.is_valid():
+                dob = customer_form.cleaned_data['dob']
+                user=form.save()
+                #user.is_active = False
+                student = Customer.objects.create(user=user, dob=dob)
+                group=Group.objects.get(name='Student')
+                group.user_set.add(user)
+                return render(request, 'uweflix/index.html')
     return render(request, 'uweflix/register.html', context)
 
 def register_clubrep(request):
@@ -94,20 +110,34 @@ def login(request):
         pw = request.POST['password'] #Gets Password
         user = authenticate(username=un, password=pw)
         if user is not None:
+            request.session['user_id'] = user.id
             if user.groups.filter(name='Student').exists():
+                request.session['user_group'] = "Student"
+                request.session['credit'] = Customer.objects.get(user=user.id).credit
                 return render (request, "uweflix/student_home.html")
             elif user.groups.filter(name='Club Rep').exists():
+                request.session['user_group'] = "Club Rep"
+                request.session['credit'] = ClubRep.objects.get(user=user).credit
                 return render (request, "uweflix/club_rep_home.html")
             elif user.groups.filter(name='Account Manager').exists():
+                request.session['user_group'] = "Account Manager"
                 return render (request, "uweflix/am_home.html")
             elif user.groups.filter(name='Cinema Manager').exists():
+                request.session['user_group'] = "Cinema Manager"
                 return render (request, "uweflix/Cinema_manager_home.html")
         else:
             messages.error(request, "Bad Credentials")
     return render(request, "uweflix/logIn.html")
 
 def logout(request):
-    return render(request, 'uweflix/logout.html')
+    try:
+        del request.session['user_id']
+        del request.session['user_group']
+        del request.session['credit']
+    except KeyError:
+        pass
+    finally:
+        return redirect("/login/")
 
 def userpage(request):
     context = {}
@@ -115,11 +145,10 @@ def userpage(request):
 
 def payment(request): # Will also take showing_id as a param once showing page is completed!
     showing = Showing.objects.get(id=1)
-    customer = Customer.objects.filter(id=1)
+    #customer = Customer.objects.filter(id=1)
     form = PaymentForm()
     context = {
         "showing": showing,
-        "customer_data": customer,
         "form": form
     }
     if request.method == 'POST':
@@ -133,20 +162,23 @@ def payment(request): # Will also take showing_id as a param once showing page i
             payment_option = form.cleaned_data.get("payment_options")
             if showing.remaining_tickets < total_tickets: #If there is NOT enough tickets
                 print("Not enough tickets remaining to make this booking.")
+                return render(request, "uweflix/error.html")
             else:
-                if 'accountType' in request.session:  # If signed in
+                if 'user_id' in request.session:  # If signed in
+                    user_type = request.session['user_group']
                     #print(form.cleaned_data.get("payment_options"))
-                    if (request.session['accountType'] == "st" or request.session['accountType'] == "cr"):
+                    if (user_type == "Student" or user_type == "Club Rep"):
                         #Club reps and students
-                        user = Customer.objects.get(username=request.session['username'])
+                        user = Customer.objects.get(user=request.session['user_id'])
                     if payment_option == 'credit' and user.credit >= total_cost: # If paying with credit
                         user.credit -= total_cost
+                        request.session['credit'] = user.credit
                         user.save()
                         paying = True
-                    elif request.session['accountType'] == "cr" and payment_option == "tab":
+                    elif user_type == "Club Rep" and payment_option == "tab" or payment_option == "nopay":
                         paying = False
                     else:
-                        return redirect("/error/")
+                        return render(request, "uweflix/error.html")
                 elif payment_option == "nopay":
                     user = None
                     paying = False
@@ -175,17 +207,18 @@ def error(request):
     render(request, "uweflix/error.html")
 
 def topup(request):
-    if 'accountType' in request.session:
-        if request.session['accountType'] == "cr":
+    if 'user_group' in request.session:
+        if request.session['user_group'] == "Club Rep":
             userObject = ClubRep
-        elif request.session['accountType'] == "st":
+        elif request.session['user_group'] == "Student":
             userObject = Customer
         else:
             return redirect('home') 
         if request.method == 'POST':
             topUpValue = request.POST.get("topUpValue")
-            loggedInRep = userObject.objects.get(username = request.session['username'])
+            loggedInRep = userObject.objects.get(user = request.session['user_id'])
             loggedInRep.credit = loggedInRep.credit + round(float(topUpValue), 2)
+            request.session['credit'] = loggedInRep.credit
             loggedInRep.save()
         return render(request, "uweflix/topup.html")   
     else:
@@ -220,6 +253,23 @@ def transaction_test(request):
         Transaction.deleteTransaction(transaction2.id)
         print(f"Transaction deleted.")
     return render(request, "uweflix/transaction_test.html")
+
+def set_payment_details(request):
+    form = AccessClubForm()
+    context = {'form': form}
+    if request.method == "POST":
+        form = AccessClubForm(request.POST)
+        if form.is_valid():
+            club_id = form.cleaned_data['club']
+            club_obj = Club.objects.get(id=club_id)
+            club_obj.card_number = form.cleaned_data['card_number']
+            month = form.cleaned_data['expiry_month']
+            year = form.cleaned_data['expiry_year']
+            formatted_date = f"{year}-{month}-{calendar.monthrange(int(year), int(month))[1]}"
+            print(formatted_date)
+            club_obj.card_expiry_date = formatted_date
+            club_obj.save()
+    return render(request, "uweflix/set_payment.html", context)
 
 #def addClub(request):#
 #    context = {}

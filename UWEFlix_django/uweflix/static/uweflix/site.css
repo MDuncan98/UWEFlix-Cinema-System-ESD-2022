@@ -49,11 +49,23 @@ h1,h2,h3,h4,h5,h6{
 	float: right;
 }
 
-#id_payment_options {
+#id_payment_options, #id_club, #id_card_number {
 	float:right;
 }
 
-#confirm-btn {
+.expiry-section {
+	float: right;
+}
+
+.expiry-label {
+	float:left;
+}
+
+#id_expiry_month, #id_expiry_year {
+	width: 60px;
+}
+
+#confirm-btn, #set-payment-btn {
 	width:100px;
 	float:right;
 }

@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Count
 from uweflix.models import *
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -12,7 +13,34 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('username','email')
+        fields = ('username','email',)
+
+class RegisterStudentForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ('dob',)
+
+class AccessClubForm(forms.Form):
+    club_choices = ((None, "Select a club:"),)
+    month_choices = ()
+    year_choices = ()
+    current_year = 2022 #find a programmatical way of getting this
+    for i in range(Club.objects.all().count()):
+        tmp = ((Club.objects.get(id=i+1).id, Club.objects.get(id=i+1).name),)
+        club_choices += tmp
+    for i in range(12):
+        choice_string = ""
+        if i < 9:
+            choice_string += "0"
+        tmp = ((i+1, choice_string+str(i+1)),)
+        month_choices += tmp
+    for i in range(15):
+        tmp = ((current_year+i,current_year+i),)
+        year_choices += tmp
+    club = forms.ChoiceField(choices=club_choices)
+    card_number = forms.DecimalField(max_digits=16, decimal_places=0)
+    expiry_month = forms.ChoiceField(choices=month_choices)
+    expiry_year = forms.ChoiceField(choices=year_choices)
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:

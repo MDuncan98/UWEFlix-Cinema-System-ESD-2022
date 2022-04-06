@@ -8,8 +8,8 @@ Register
 
 <form method='POST' action="">
     {% csrf_token %}
-    {{form.as_p}}
-
+    {{ form.as_p }}
+    {{ customer_form.as_p }}
     <input type="submit" name="Create User">
 
 </form>
