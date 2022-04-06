@@ -73,7 +73,7 @@ def login(request):
             #More useful error message to be shown to user can be added
             print("error")
 
-    return render(request, "uweflix/logIn.html")
+    return render(request, "uweflix/login.html")
 
 def userpage(request):
     context = {}

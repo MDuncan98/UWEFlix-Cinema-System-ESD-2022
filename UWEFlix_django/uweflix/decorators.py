@@ -19,6 +19,6 @@
       #      if group in allowed_roles:
        #         return view_func(request, *args, **kwargs)
         #    else:
-         #       return redirect('/logIn')
+         #       return redirect('/login')
         #return wrapper_func
     #return
