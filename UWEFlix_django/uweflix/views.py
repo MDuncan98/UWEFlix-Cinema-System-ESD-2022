@@ -202,7 +202,7 @@ def payment(request, showing): # Will also take showing_id as a param once showi
                 print("Success")
                 return render(request, "uweflix/thanks.html")
         else:
-            return render(request, 'uweflix/payment.html', context={'form':form, "show_showing": showing})
+            return render(request, 'uweflix/payment.html', context={'form':form, "showing": showing})
 
     return render(request, 'uweflix/payment.html', context)
 
@@ -266,6 +266,8 @@ def set_payment_details(request):
             formatted_date = f"{year}-{month}-{calendar.monthrange(int(year), int(month))[1]}"
             club_obj.card_expiry_date = formatted_date
             club_obj.save()
+        else:
+            context = {'form': form}
     return render(request, "uweflix/set_payment.html", context)
 
 #def addClub(request):#

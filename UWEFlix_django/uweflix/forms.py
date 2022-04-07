@@ -1,10 +1,14 @@
 from django import forms
 from uweflix.models import *
 from django.core.exceptions import ValidationError
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, MinLengthValidator
 from django.utils.safestring import mark_safe
 from django.db.models import Count
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from datetime import datetime
+from datetime import date
+import time
+import calendar
 
 """class EnterClubRepForm(forms.ModelForm):
     class Meta:
@@ -39,10 +43,11 @@ class RegisterStudentForm(forms.ModelForm):
         fields = ('dob',)
 
 class AccessClubForm(forms.Form):
+    today = date.today()
     club_choices = ((None, "Select a club:"),)
     month_choices = ()
     year_choices = ()
-    current_year = 2022 #find a programmatical way of getting this
+    current_year = today.year #find a programmatical way of getting this
     for i in range(Club.objects.all().count()):
         tmp = ((Club.objects.get(id=i+1).id, Club.objects.get(id=i+1).name),)
         club_choices += tmp
@@ -59,6 +64,20 @@ class AccessClubForm(forms.Form):
     card_number = forms.DecimalField(max_digits=16, decimal_places=0)
     expiry_month = forms.ChoiceField(choices=month_choices)
     expiry_year = forms.ChoiceField(choices=year_choices)
+
+    def clean(self):
+        card_number = self.cleaned_data.get('card_number')
+        expiry_month = self.cleaned_data.get('expiry_month')
+        expiry_year = self.cleaned_data.get('expiry_year')
+        try:
+            if len(str(int(card_number))) < 16:
+                raise forms.ValidationError("Card number is less than 16 digits.")
+        except:
+            raise forms.ValidationError("Card number is invalid. It must be 16 digits.")
+        expiry_date = date(int(expiry_year), int(expiry_month), calendar.monthrange(int(expiry_year), int(expiry_month))[1])
+        if expiry_date < self.today:
+            raise forms.ValidationError("The expiry date entered has already passed.")
+        return self.cleaned_data
 
 class PaymentForm(forms.Form):
     adult_tickets = forms.IntegerField(validators=[

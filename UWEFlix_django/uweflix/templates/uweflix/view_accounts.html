@@ -50,7 +50,7 @@ Viewings
                     <td>{{ transaction.date | date:'d M Y' }}</td>
                     <td>{{ transaction.customer.user.first_name }}</td>
                     <td>{{ transaction.customer.user.last_name }}</td>
-                    <td>£{{ transaction.cost }}</td>
+                    <td>£{{ transaction.cost | floatformat:2 }}</td>
                     <td>{{ transaction.is_settled }}</td>
                 </tr>
             {% endfor %}

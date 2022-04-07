@@ -34,6 +34,7 @@ Payment
                 (Please bring ID with you to verify your age!)
            {% endif %}
         </p>
+        <br/>
         <h3>Showing:</h3>
         <p>Screen {{ showing.screen.id }}<br/>{{ showing.time | date:'j M Y' }} at {{ showing.time | time:'G:i'}}</p>
         <hr/>
@@ -42,20 +43,21 @@ Payment
     <div class="form">
         <form id="payment-form" action="{% url 'payment' showing.pk %}" method="post" autocomplete="off">
             {% csrf_token %}
+            <h3>Payment:</h3>
             <div class="alert-error">
                 {{ form.non_field_errors }}
             </div>
             <div class="form-area">
                 <div class="form-group">
-                    Adult tickets: {{ form.adult_tickets }}
+                    Adult tickets (£5): {{ form.adult_tickets }}
                 </div>
                 <br/>
                 <div class="form-group">
-                    Student Tickets: {{ form.student_tickets }}
+                    Student Tickets (£4): {{ form.student_tickets }}
                 </div>
                 <br/>
                 <div class="form-group">
-                    Child Tickets: {{ form.child_tickets }}
+                    Child Tickets (£3): {{ form.child_tickets }}
                 </div>
                 <hr/>
                 <div class="form-group">
