@@ -25,9 +25,24 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto">
                 {% if request.session.user_id is None or request.session.user_group == "Student" or request.session.user_group == "Club Rep"%}
+                    {% if request.session.user_group == "Club Rep"%}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'club_rep_home' %}">Dashboard</a>
+                    </li>
+                    {% endif %} 
+                    {% if request.session.user_group == "Student"%}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'student_home' %}">Dashboard</a>
+                    </li>
+                    {% endif %} 
                 <li class="nav-item active">
                 <a class="nav-link" href="{% url 'viewings' %}">Viewings</a>
                 </li>
+                    {% if request.session.user_group == "Club Rep"%}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'settle_payments' %}">Settle Payments</a>
+                    </li>
+                {% endif %} 
                 {% elif request.session.user_group == "Cinema Manager" %}
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'add_film' %}">Add Film</a>

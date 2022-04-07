@@ -28,4 +28,5 @@ urlpatterns = [
     path("set_payment/", views.set_payment_details, name="set_payment"),
     path("am_home/", views.am_home, name="am_home"),
     path("add_account/", views.addClubAccount, name="add_account"),
+    path("settle_payments/", views.settle_payments, name="settle_payments"),
 ]

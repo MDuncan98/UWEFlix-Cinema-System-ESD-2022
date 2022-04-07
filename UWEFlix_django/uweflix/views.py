@@ -251,6 +251,28 @@ def view_accounts(request):
     else:   
         return render(request, 'uweflix/view_accounts.html', context)
 
+def settle_payments(request):
+    context = {}
+    if request.session["user_group"] == "Club Rep":
+        club_rep = ClubRep.objects.get(user_id=request.session["user_id"])
+        transaction_list = Transaction.objects.filter(
+                customer=club_rep,
+                date__year = dt.now().year,
+                date__month = dt.now().month,
+                is_settled = False
+            )
+        context = {
+            'transactions': transaction_list,
+            'club_rep': club_rep.club_rep_num
+            }
+        if request.method == "POST":
+            for transaction in transaction_list:
+                #Need to discuss the 'paying' aspect of this.
+                transaction.is_settled = True
+                transaction.save()   
+        return render(request, 'uweflix/settle_payments.html', context)
+    else:
+        return redirect('home')
 
 def set_payment_details(request):
     form = AccessClubForm()
