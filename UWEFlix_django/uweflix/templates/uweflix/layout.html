@@ -24,7 +24,7 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto">
-                {% if request.session.user_id is None or request.session.user_group == "Student"%}
+                {% if request.session.user_id is None or request.session.user_group == "Student" or request.session.user_group == "Club Rep"%}
                 <li class="nav-item active">
                 <a class="nav-link" href="{% url 'viewings' %}">Viewings</a>
                 </li>
@@ -35,9 +35,6 @@
                 {% elif request.session.user_group == "Account Manager" %}
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'view_accounts' %}">View Accounts</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'register_clubrep' %}">Register Club Account</a>
                 </li>
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'set_payment' %}">Set Payment Details</a>

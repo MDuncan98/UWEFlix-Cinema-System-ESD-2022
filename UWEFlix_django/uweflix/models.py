@@ -317,3 +317,9 @@ class ACCOUNT(models.Model):
     expiry_date = models.CharField(max_length=8)
     discount_rate = models.IntegerField(default=0)
     club = models.ForeignKey(Club, null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        defining_string = f"{self.club_rep_num} - {self.user.first_name} {self.user.last_name}"
+        return defining_string
+# Create your models here.
+
