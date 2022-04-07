@@ -20,11 +20,11 @@ class CustomUserChangeForm(UserChangeForm):
         model = User
         fields = ('username',)
 
-class RegisterClubRepForm(forms.ModelForm):
-    class Meta:
-        model = ClubRep
-        fields = ('club', 'club_rep_num', 'dob')
-    dob = forms.DateField(widget=forms.DateInput())
+#class RegisterClubRepForm(forms.ModelForm):
+ #   class Meta:
+ #       model = ClubRep
+  #      fields = ('club', 'club_rep_num', 'dob')
+  #  dob = forms.DateField(widget=forms.DateInput())
 
 class RegisterStudentForm(forms.ModelForm):
     class Meta:
@@ -85,15 +85,20 @@ class PaymentForm(forms.Form):
         self.payment_choices = newvalue
 
 
-#class addClubForm(forms.ModelForm):
-#    class Meta:
-#        model = Club
-#        fields = "__all__"
+class addClubForm(forms.ModelForm):
+    class Meta:
+        model = Club
+        fields = "__all__"
 
-#class addRepForm(forms.ModelForm):
-#    class Meta:
-#        model = Representative
-#        fields = "__all__"
-#        widgets = {
-#        'dob': forms.DateInput(format=('%m/%d/%Y'), attrs={'class':'form-control', 'placeholder':'Select a date', 'type':'date'}),
-#        }
+class addRepForm(forms.ModelForm):
+    class Meta:
+        model = ClubRep
+        fields = "__all__"
+        exclude = [ 'user', 'credit' ]
+        widgets = {'dob1': forms.DateInput(format=('%m/%d/%Y'), attrs={'class':'form-control', 'placeholder':'Select a date', 'type':'date'}),
+        }
+
+class addClubAccountForm(forms.ModelForm):
+    class Meta:
+        model = ACCOUNT
+        fields = "__all__"

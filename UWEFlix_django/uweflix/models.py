@@ -1,4 +1,5 @@
 from email import charset
+from pyexpat import model
 from tokenize import String
 from xml.dom.minidom import CharacterData
 from django.db import models
@@ -87,7 +88,7 @@ class Film(models.Model):
             showing = showing.object.get(id=id)
             return showing
         except:
-            print("No showinf exists with that showing ID.")
+            print("No showing exists with that showing ID.")
 
     def filmShowing(id, *showing_data): #UPDATE
         try:
@@ -283,12 +284,12 @@ class Club(models.Model):
                 elif data_item == 'card_expiry_date':
                     Club.objects.filter(id=id).update(card_expiry_date=data_item)
                 elif data_item == 'discount_rate':
-                    Club.objects.filter(id=id).update(discount_rate=data_item)              
-            return Club.objects.filter(id=id)                     
+                    Club.objects.filter(id=id).update(discount_rate=data_item)
+            return Club.objects.filter(id=id)
         except:
            print(f"Data item {data_item} does not conform to any of the required input types." +
                     "\nThis value could not be updated.")
-    
+
     def removeClub(id): #Delete
         try:
             club = Club.objects.get(id=id)
@@ -297,18 +298,22 @@ class Club(models.Model):
             print("Club can't be found, therefore can't be deleted")
 
 
-class ClubRep(Customer):
-    club = models.ForeignKey(Club, default=1, on_delete=models.CASCADE)
+class ClubRep(models.Model):
+    club = models.ForeignKey(Club, null=True, on_delete=models.CASCADE)
     club_rep_num = models.CharField(max_length=8)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    dob1 = models.DateField(("dob"), default=datetime.date.today)
     #"A unique Club Representative number and unique password is allocated to the
     #Club Representative."
     #Therefore:
     #- Unique CR number = username (inherited from User model), ensure that username is numbers only
     #- Unique CR password = password (inherited from User model)
-
-
-
-
-
-
 # Create your models here.
+
+class ACCOUNT(models.Model):
+    title = models.CharField(max_length=10)
+    card_num = models.CharField(max_length=8)
+    expiry_date = models.CharField(max_length=8)
+    discount_rate = models.IntegerField(default=0)
+    club = models.ForeignKey(Club, null=True, on_delete=models.CASCADE)

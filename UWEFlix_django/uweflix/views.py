@@ -262,35 +262,53 @@ def set_payment_details(request):
             club_obj.save()
     return render(request, "uweflix/set_payment.html", context)
 
-#def addClub(request):#
-#    context = {}
-#    form = addClubForm(request.POST or None)
+def add_club(request):#
+    context = {}
+    form = addClubForm()
+    form = addClubForm(request.POST or None)
 
-#    if request.method == "POST":
-#        if form.is_valid():
-#            form.save()
-#            messages.success(request, "Club successfully registered.")
-#            return redirect('/addFilm')
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Club successfully registered.")
+            return redirect('/addFilm')
 
-#    context['form'] = form
-#    return render(request, "Uweflix/addClub.html", context)
+    context['form'] = form
+    return render(request, "Uweflix/add_club.html", context)
 
-#@allowed_users(allowed_roles=['cinemaManagers'])
-#def addRep(request):
-#    context = {}
-#    form = addRepForm(request.POST or None)
+def add_rep(request):
+    context = {}
+    form = addRepForm(request.POST or None)
 
-#    if request.method == "POST":
-#        if form.is_valid():
-#            user = form.save(commit=False)
+    if request.method == "POST":
+        if form.is_valid():
+           form = form.save(commit=False)
 
-#            user.save()
+           form.save()
 
-#            user_group = Group.objects.get(name="studentReps")
-#            user.groups.add(user_group)
+            #user_group = Group.objects.get(name="studentReps")
+            #user.groups.add(user_group)
 
-#            messages.success(request, "Rep successfully added.")
-#            return redirect('/addRep')
+           messages.success(request, "Rep successfully added.")
+           return redirect('/add_rep')
 
-#    context['form'] = form
-#    return render(request, "Uweflix/addRep.html", context)
+    context['form'] = form
+    return render(request, "Uweflix/add_rep.html", context)
+
+def addClubAccount(request):
+    context = {}
+    form = addClubAccountForm(request.POST or None)
+
+    if request.method == "POST":
+        if form.is_valid():
+
+           form.save()
+
+            #user_group = Group.objects.get(name="studentReps")
+            #user.groups.add(user_group)
+
+           messages.success(request, "Rep successfully added.")
+           return redirect('/add_account')
+
+    context['form'] = form
+    return render(request, "Uweflix/add_account.html", context)
