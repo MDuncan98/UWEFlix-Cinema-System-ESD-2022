@@ -230,21 +230,27 @@ def topup(request):
     else:
         return redirect('home')
 
-class TransactionListView(ListView):  # Logic for the View Accounts page
-    model = Transaction
+def view_accounts(request):
+    form = SearchClubRepForm()
+    context = {'form':form}
+    if request.method == "POST":
+        form = SearchClubRepForm(request.POST)
+        if form.is_valid():
+            clubrep = ClubRep.objects.get(club_rep_num=form.cleaned_data['clubrep_choice'])
+            transaction_list = Transaction.objects.filter(
+                customer=clubrep,
+                date__year = dt.now().year,
+                date__month = dt.now().month
+            )
+            context = {
+                'club_rep_num': clubrep.club_rep_num,
+                'transaction_list': transaction_list,
+                'form': form
+            }
+        return render(request, 'uweflix/view_accounts.html', context)
+    else:   
+        return render(request, 'uweflix/view_accounts.html', context)
 
-    def get_queryset(self):
-        query = self.request.GET.get('search_accounts')
-        object_list = Transaction.objects.filter(  # Search for specified account transactions within the last month
-            customer=query,
-            date__year = dt.now().year,
-            date__month = dt.now().month
-        )
-        return object_list
-
-    def get_context_data(self, **kwargs):
-        context = super(TransactionListView, self).get_context_data(**kwargs)
-        return context
 
 def set_payment_details(request):
     form = AccessClubForm()

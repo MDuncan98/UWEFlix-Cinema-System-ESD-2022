@@ -306,6 +306,10 @@ class ClubRep(Customer):
     #- Unique CR number = username (inherited from User model), ensure that username is numbers only
     #- Unique CR password = password (inherited from User model)
 
+    def __str__(self):
+        defining_string = f"{self.club_rep_num} - {self.user.first_name} {self.user.last_name}"
+        return defining_string
+
 
 
 

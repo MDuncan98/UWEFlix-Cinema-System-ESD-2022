@@ -10,6 +10,13 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
     class Meta:
         model = ClubRep"""
 
+class SearchClubRepForm(forms.Form):
+    clubrep_choices = ()
+    for i in ClubRep.objects.all():
+        tmp = ((i.club_rep_num, i),)
+        clubrep_choices += tmp
+    clubrep_choice = forms.ChoiceField(choices=clubrep_choices)
+
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User

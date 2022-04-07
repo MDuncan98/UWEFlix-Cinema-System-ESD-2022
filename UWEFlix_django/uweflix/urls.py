@@ -2,11 +2,6 @@ from django.urls import path
 from uweflix import views
 from uweflix.models import *
 
-transaction_list_view = views.TransactionListView.as_view(
-    queryset = Transaction.objects.order_by("-date"),
-    context_object_name="transaction_list",
-    template_name="uweflix/view_accounts.html",
-)
 
 
 urlpatterns = [
@@ -22,7 +17,7 @@ urlpatterns = [
     path("register_cr/", views.register_clubrep, name="register_clubrep"),
     #path("payment/", views.payment, name="payment"),
     path("payment/<int:showing>/", views.payment, name="payment"),
-    path("view_accounts/", transaction_list_view, name="view_accounts"),
+    path("view_accounts/", views.view_accounts, name="view_accounts"),
     path("thanks/", views.thanks, name="thanks"),
     path("user/", views.userpage, name="user-page"),
     #path("add_club/", views.add_club, name="add_club"),
