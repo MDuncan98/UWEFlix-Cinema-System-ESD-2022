@@ -84,7 +84,41 @@ class Film(models.Model):
 
     def __str__(self):
         return self.title
+        
+    def newFilm (title, age_rating): #create
+        try:
+            film = Film.objects.create(title=title,age_rating=age_rating)
+            return film
+        except:
+            print("Film could not be added")
 
+    def getFilm(id): #read
+        try:
+            film = film.objects.get(id=id)
+            return film
+        except:
+            print("Film could not be found")
+
+    def removeFilm(id): #Delete
+        try:
+            film = Film.objects.get(id=id)
+            film.delete()
+        except:
+            print("Film could not be deleted, and may not exist")            
+      
+    def updateFilm(id, fieldToEdit): #update
+        try:
+            for field in fieldToEdit:
+                if isinstance(field, int):
+                    Film.objects.filter(id=id).update(title=field)
+                elif isinstance(field, bool):
+                    Film.objects.filter(id=id).update(age_rating=field)
+            return Film.objects.get(id=id)
+        except:
+            print("film could not be updated")
+
+
+    
 class Screen(models.Model):
     capacity = models.IntegerField()
     apply_covid_restrictions =  models.BooleanField()
