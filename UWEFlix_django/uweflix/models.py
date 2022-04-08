@@ -298,12 +298,12 @@ class Club(models.Model):
             print("Club can't be found, therefore can't be deleted")
 
 
-class ClubRep(models.Model):
+class ClubRep(Customer):
     club = models.ForeignKey(Club, null=True, on_delete=models.CASCADE)
     club_rep_num = models.CharField(max_length=8)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-    dob1 = models.DateField(("dob"), default=datetime.date.today)
+    #first_name = models.CharField(max_length=30)
+    #last_name = models.CharField(max_length=30)
+    #dob1 = models.DateField(("dob"), default=datetime.date.today)
     #"A unique Club Representative number and unique password is allocated to the
     #Club Representative."
     #Therefore:

@@ -31,11 +31,11 @@ class CustomUserChangeForm(UserChangeForm):
         model = User
         fields = ('username',)
 
-#class RegisterClubRepForm(forms.ModelForm):
- #   class Meta:
- #       model = ClubRep
-  #      fields = ('club', 'club_rep_num', 'dob')
-  #  dob = forms.DateField(widget=forms.DateInput())
+class RegisterClubRepForm(forms.ModelForm):
+    class Meta:
+        model = ClubRep
+        fields = ('club', 'club_rep_num', 'dob')
+        dob = forms.DateField(widget=forms.DateInput())
 
 class RegisterStudentForm(forms.ModelForm):
     class Meta:
@@ -120,9 +120,13 @@ class addRepForm(forms.ModelForm):
     class Meta:
         model = ClubRep
         fields = "__all__"
-        exclude = [ 'user', 'credit' ]
-        widgets = {'dob1': forms.DateInput(format=('%m/%d/%Y'), attrs={'class':'form-control', 'placeholder':'Select a date', 'type':'date'}),
-        }
+        exclude = "user", "credit", "club_rep_num"
+
+class ClubRepCreationForm(CustomUserCreationForm):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name',)
+
 
 class addClubAccountForm(forms.ModelForm):
     class Meta:
