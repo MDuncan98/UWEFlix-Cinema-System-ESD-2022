@@ -115,6 +115,7 @@ class addClubForm(forms.ModelForm):
     class Meta:
         model = Club
         fields = "__all__"
+        exclude = "card_number", "expiry_year", "expiry_month"
 
 class addRepForm(forms.ModelForm):
     class Meta:
@@ -128,7 +129,7 @@ class ClubRepCreationForm(CustomUserCreationForm):
         fields = ('first_name', 'last_name',)
 
 
-class addClubAccountForm(forms.ModelForm):
+"""class addClubAccountForm(forms.ModelForm):
     class Meta:
         model = ACCOUNT
-        fields = "__all__"
+        fields = "__all__"""

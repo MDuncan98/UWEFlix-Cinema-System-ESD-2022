@@ -47,6 +47,9 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'add_film' %}">Add Film</a>
                 </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'add_rep' %}">Add Club Rep</a>
+                </li>
                 {% elif request.session.user_group == "Account Manager" %}
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'view_accounts' %}">View Accounts</a>

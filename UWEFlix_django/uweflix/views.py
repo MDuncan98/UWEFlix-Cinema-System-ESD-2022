@@ -315,13 +315,8 @@ def add_rep(request):
         userForm = ClubRepCreationForm(request.POST)
         form = addRepForm(request.POST)
         if userForm.is_valid():
-            print("formvali")
             if form.is_valid():
-                print("formvalid")
                 user = userForm.save(commit=False)
-                #firstName = userForm.cleaned_data['first_name']
-                #lastName = userForm.cleaned_data['last_name']
-                #password = userForm.cleaned_data['password']
                 dob = form.cleaned_data['dob']
                 club = form.cleaned_data['club']
                 clubRepNum = 1
@@ -330,7 +325,7 @@ def add_rep(request):
                 crUsername = ("%04d" % (clubRepNum,))
                 user.username = crUsername
                 user.save()
-                newClubRep = ClubRep.objects.create(user=user, club=club, dob=dob, club_rep_num=clubRepNum)
+                ClubRep.objects.create(user=user, club=club, dob=dob, club_rep_num=clubRepNum)
                 userGroup = Group.objects.get(name="Club Rep")
                 user.groups.add(userGroup)
                 messages.success(request, "Rep successfully added.")
@@ -340,7 +335,7 @@ def add_rep(request):
     return render(request, "Uweflix/add_rep.html", context)
 
 def addClubAccount(request):
-    context = {}
+    """context = {}
     form = addClubAccountForm(request.POST or None)
 
     if request.method == "POST":
@@ -354,5 +349,5 @@ def addClubAccount(request):
            messages.success(request, "Rep successfully added.")
            return redirect('/add_account')
 
-    context['form'] = form
+    context['form'] = form"""
     return render(request, "Uweflix/add_account.html", context)
