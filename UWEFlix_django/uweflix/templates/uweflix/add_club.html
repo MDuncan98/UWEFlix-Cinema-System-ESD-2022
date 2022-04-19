@@ -1,8 +1,15 @@
 {% extends "uweflix/layout.html" %}
 {% load static %}
 {% block title %}
-Add Club Test Page
+Add Club
 {% endblock %}
 {% block content %}
 <h2>Welcome Add Club Here</h2>
+    <form method="post" class="form-group">
+
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-success">Add Club</button>
+        </form>
 {% endblock %}

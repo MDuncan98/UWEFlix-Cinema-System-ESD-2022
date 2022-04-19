@@ -137,14 +137,14 @@ class Screen(models.Model):
 
     def updateScreen(id, fieldToEdit): #Update
         try:
-            for field in fieldToEdit:
-                if isinstance(field, int):
-                    Screen.objects.filter(id=id).update(capacity=field)
-                elif isinstance(field, bool):
-                    Screen.objects.filter(id=id).update(apply_covid_restrictions=field)
+            if isinstance(fieldToEdit, bool):
+                Screen.objects.filter(id=id).update(apply_covid_restrictions=fieldToEdit) 
+            elif isinstance(fieldToEdit, (int, float)):
+                Screen.objects.filter(id=id).update(capacity=fieldToEdit)     
             return Screen.objects.get(id=id)
-        except:
+        except Exception as e:
             print("Screen cannot be found, perhaps you have entered an invalid field type?")
+            print(e)
 
     def removeScreen(id): #Delete
         try:
@@ -260,9 +260,9 @@ class Club(models.Model):
     def __str__(self):
         return self.name
 
-    def newClub(name, card_number, card_expiry_date, discount_rate): #Create
+    def newClub(club_name, address_street_num, address_street, address_city, address_postcode, contact_landline, contact_mobile, contact_email): #Create
         try:
-            club = Club.objects.create(name=name, card_number=card_number, card_expiry_date=card_expiry_date, discount_rate=discount_rate)
+            club = Club.objects.create(name=club_name, street_number=address_street_num, street=address_street, city=address_city, post_code=address_postcode, landline_number=contact_landline, mobile_number=contact_mobile, email=contact_email)
             return club
         except:
             print("Club can't be created")

@@ -27,7 +27,24 @@ def club_rep_home(request):
     return render(request, 'uweflix/club_rep_home.html')
 
 def cinema_manager_home(request):
-    return render(request, 'uweflix/cinema_manager_home.html')
+    if request.user.is_authenticated:
+        if request.session['user_group'] == "Cinema Manager":
+            context = {}
+            restrictions = Screen.objects.first().apply_covid_restrictions
+            context = {
+                'restrictions_bool' : restrictions
+            }
+            if request.method == "POST":
+                for screen in Screen.objects.all():
+                    Screen.updateScreen(screen.id, not screen.apply_covid_restrictions)
+                    context = {
+                        'restrictions_bool' : screen.apply_covid_restrictions
+                    }
+            return render(request, 'uweflix/cinema_manager_home.html', context)
+        else:
+            return redirect('/')
+    else:
+        return redirect('/')
 
 def student_home(request):
     return render(request, 'uweflix/student_home.html')
@@ -292,16 +309,24 @@ def set_payment_details(request):
             context = {'form': form}
     return render(request, "uweflix/set_payment.html", context)
 
-def add_club(request):#
+def add_club(request):
     context = {}
     form = addClubForm()
-    form = addClubForm(request.POST or None)
-
     if request.method == "POST":
+        form = addClubForm(request.POST)
         if form.is_valid():
-            form.save()
+            club = form.save(commit=False)
+            clubName = form.cleaned_data['name']
+            clubStreetNumber = form.cleaned_data['street_number']
+            clubStreet = form.cleaned_data['street']
+            clubCity = form.cleaned_data['city']
+            clubPostcode = form.cleaned_data['post_code']
+            clubLandlineNumber = form.cleaned_data['landline_number']
+            clubMobileNumber = form.cleaned_data['mobile_number']
+            clubEmail = form.cleaned_data['email']
+            Club.newClub(clubName, clubStreetNumber, clubStreet, clubCity, clubPostcode, clubLandlineNumber, clubMobileNumber, clubEmail)
             messages.success(request, "Club successfully registered.")
-            return redirect('/addFilm')
+            return redirect('/cinema_manager_home')
 
     context['form'] = form
     return render(request, "Uweflix/add_club.html", context)
@@ -351,3 +376,33 @@ def addClubAccount(request):
 
     context['form'] = form"""
     return render(request, "Uweflix/add_account.html", context)
+
+def review_students(request, userID):
+    print(userID)
+    students = User.objects.filter(is_active=False)
+    studentChoice = students.first()
+    if userID == 0 and studentChoice is not None:
+        return redirect('review_students', userID=studentChoice.id) 
+    if userID != 0:
+        studentChoice = User.objects.get(id = userID)  
+    context = {
+        'students' : students,
+        'chosenStudent' : studentChoice,
+        'urlID' : userID
+    }
+    if (request.method == "POST"):
+        name = request.POST.get('name')
+        if name == "changeStudent":
+            studentID = request.POST['ReviewStudentForm']
+            studentChoice = User.objects.get(id = studentID)
+            return redirect('review_students', userID=studentChoice.id)
+        else:
+            if name == "acceptStudent":
+                User.objects.filter(id=userID).update(is_active=True)
+            elif name == "denyStudent":
+                studentChoice.delete()
+            students = User.objects.filter(is_active=False)
+            studentChoice = students.first()
+            return redirect('review_students', userID=0) 
+    
+    return render(request, "UweFlix/review_students.html", context)

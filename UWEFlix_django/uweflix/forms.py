@@ -115,7 +115,7 @@ class addClubForm(forms.ModelForm):
     class Meta:
         model = Club
         fields = "__all__"
-        exclude = "card_number", "expiry_year", "expiry_month"
+        exclude = "card_number", "card_expiry_date", "discount_rate"
 
 class addRepForm(forms.ModelForm):
     class Meta:

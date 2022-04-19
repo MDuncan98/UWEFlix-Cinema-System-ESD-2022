@@ -29,4 +29,5 @@ urlpatterns = [
     path("am_home/", views.am_home, name="am_home"),
     path("add_account/", views.addClubAccount, name="add_account"),
     path("settle_payments/", views.settle_payments, name="settle_payments"),
+    path("review_students/<int:userID>", views.review_students, name="review_students"),
 ]
