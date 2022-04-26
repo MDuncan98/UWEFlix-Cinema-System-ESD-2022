@@ -1,26 +1,17 @@
 from email import charset
+from pyexpat import model
 from tokenize import String
 from xml.dom.minidom import CharacterData
 from django.db import models
+from django.contrib.auth.models import *
 import datetime
 
+class User(AbstractUser):
+    pass
 
-class Account(models.Model):  # Database for storing user account information
-    username = models.CharField(max_length=100)
-    password = models.CharField(max_length=50)
-    account_type = models.CharField(max_length=2)
-    """Account types:
-        - cm = Cinema Manager
-        - am = Accounts Manager
-        - cr = Club Representative
-        - st = Student"""
-
-class Customer(Account):  # Student accounts
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
+class Customer(models.Model):  # Student accounts
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     dob = models.DateField('Date of birth')
-    email = models.EmailField()
-    is_validated = models.BooleanField(default=0)
     credit = models.FloatField(default=0.00)
 
 class Transaction(models.Model):  # Database for storing all of the 'accounts' to be analysed by Account Manager
@@ -99,6 +90,7 @@ class Film(models.Model):
         except:
             print("Film could not be found")
 
+
     def removeFilm(id): #Delete
         try:
             film = Film.objects.get(id=id)
@@ -116,9 +108,48 @@ class Film(models.Model):
             return Film.objects.get(id=id)
         except:
             print("film could not be updated")
+  
+    def newShowing(screen, film, ticketsLeft, socialDis):#CREATE
+        try:
+            showing = Showing.objects.create(screen=screen, film=film, time=datetime.today, remaining_tickets=ticketsLeft, apply_covid_restrictions=False)
+            return showing
+        except:
+            print("Showing object could not be created")
 
+    def getShowing(id):#READ
+        try:
+            showing = showing.object.get(id=id)
+            return showing
+        except:
+            print("No showing exists with that showing ID.")
 
-    
+    def filmShowing(id, *showing_data): #UPDATE
+        try:
+            for data_item in showing_data:
+                if isinstance(data_item, Screen):
+                    Showing.objects.filter(pk=id).update(screen=data_item)
+                elif isinstance(data_item, Film):
+                    Showing.objects.filter(pk=id).update(film=data_item)
+                elif isinstance(data_item, float):
+                    Showing.object.filter(pk=id).update(time=data_item)
+                elif isinstance(data_item, int):
+                    Showing.objects.filter(pk=id).update(remaining_tickets=data_item)
+                elif isinstance(data_item, bool):
+                    Showing.objects.filter(pk=id).update(apply_covid_restrictions=False)
+                else:
+                    print(f"Data item {data_item} does not confrom to any of the  required input types." +
+                          "\nThis value could not be updated.")
+            return Showing.objects.get(id=id)
+        except:
+            print("An error occurred when updating this object.")
+
+    def deleteShowing(id): #DELETE
+        try:
+            showing = showing.objects.get(id=id)
+            showing.delete()
+        except:
+            print("This film Showing has Successfully been deleted.")
+
 class Screen(models.Model):
     capacity = models.IntegerField()
     apply_covid_restrictions =  models.BooleanField()
@@ -139,14 +170,14 @@ class Screen(models.Model):
 
     def updateScreen(id, fieldToEdit): #Update
         try:
-            for field in fieldToEdit:
-                if isinstance(field, int):
-                    Screen.objects.filter(id=id).update(capacity=field)
-                elif isinstance(field, bool):
-                    Screen.objects.filter(id=id).update(apply_covid_restrictions=field)
+            if isinstance(fieldToEdit, bool):
+                Screen.objects.filter(id=id).update(apply_covid_restrictions=fieldToEdit) 
+            elif isinstance(fieldToEdit, (int, float)):
+                Screen.objects.filter(id=id).update(capacity=fieldToEdit)     
             return Screen.objects.get(id=id)
-        except:
+        except Exception as e:
             print("Screen cannot be found, perhaps you have entered an invalid field type?")
+            print(e)
 
     def removeScreen(id): #Delete
         try:
@@ -160,6 +191,48 @@ class Showing(models.Model):
     film = models.ForeignKey(Film,on_delete=models.CASCADE)
     time = models.DateTimeField()
     remaining_tickets = models.IntegerField(default=150)  # NEEDS TO BE ASSIGNED TO THE SCREEN CAPACITY SOMEHOW!
+
+    def newShowing(screen, film, ticketsLeft, socialDis):#CREATE
+        try:
+            showing = Showing.objects.create(screen=screen, film=film, time=datetime.today, remaining_tickets=ticketsLeft, apply_covid_restrictions=False)
+            return showing
+        except:
+            print("Showing object could not be created")
+
+    def getShowing(id):#READ
+        try:
+            showing = showing.object.get(id=id)
+            return showing
+        except:
+            print("No showinf exists with that showing ID.")
+
+    def filmShowing(id, *showing_data): #UPDATE
+        try:
+            for data_item in showing_data:
+                if isinstance(data_item, Screen):
+                    Showing.objects.filter(pk=id).update(screen=data_item)
+                elif isinstance(data_item, Film):
+                    Showing.objects.filter(pk=id).update(film=data_item)
+                elif isinstance(data_item, float):
+                    Showing.object.filter(pk=id).update(time=data_item)
+                elif isinstance(data_item, int):
+                    Showing.objects.filter(pk=id).update(remaining_tickets=data_item)
+                elif isinstance(data_item, bool):
+                    Showing.objects.filter(pk=id).update(apply_covid_restrictions=False)
+                else:
+                    print(f"Data item {data_item} does not confrom to any of the  required input types." +
+                          "\nThis value could not be updated.")
+            return Showing.objects.get(id=id)
+        except:
+            print("An error occurred when updating this object.")
+
+    def deleteShowing(id): #DELETE
+        try:
+            showing = showing.objects.get(id=id)
+            showing.delete()
+        except:
+            print("This film Showing has Successfully been deleted.")
+
 
 class Ticket(models.Model):  # Individual ticket booking database
     transaction = models.ForeignKey(Transaction, default=1, on_delete=models.SET_DEFAULT)
@@ -203,13 +276,26 @@ class Ticket(models.Model):  # Individual ticket booking database
 
 class Club(models.Model):
     name = models.CharField(max_length=100)
-    card_number = models.IntegerField()
-    card_expiry_date = models.DateField()
-    discount_rate = models.IntegerField()
+    #Address details
+    street_number = models.IntegerField()
+    street = models.CharField(max_length=100)
+    city = models.CharField(max_length=50)
+    post_code = models.CharField(max_length=8)
+    #Contact details
+    landline_number = models.CharField(max_length=11)
+    mobile_number = models.CharField(max_length=11)
+    email = models.EmailField()
+    #Payment details
+    card_number = models.IntegerField(blank=True, null=True)
+    card_expiry_date = models.DateField(blank=True, null=True)
+    discount_rate = models.IntegerField(blank=True, null=True)
 
-    def newClub(name, card_number, card_expiry_date, discount_rate): #Create
+    def __str__(self):
+        return self.name
+
+    def newClub(club_name, address_street_num, address_street, address_city, address_postcode, contact_landline, contact_mobile, contact_email): #Create
         try:
-            club = Club.objects.create(name=name, card_number=card_number, card_expiry_date=card_expiry_date, discount_rate=discount_rate)
+            club = Club.objects.create(name=club_name, street_number=address_street_num, street=address_street, city=address_city, post_code=address_postcode, landline_number=contact_landline, mobile_number=contact_mobile, email=contact_email)
             return club
         except:
             print("Club can't be created")
@@ -231,12 +317,12 @@ class Club(models.Model):
                 elif data_item == 'card_expiry_date':
                     Club.objects.filter(id=id).update(card_expiry_date=data_item)
                 elif data_item == 'discount_rate':
-                    Club.objects.filter(id=id).update(discount_rate=data_item)              
-            return Club.objects.filter(id=id)                     
+                    Club.objects.filter(id=id).update(discount_rate=data_item)
+            return Club.objects.filter(id=id)
         except:
            print(f"Data item {data_item} does not conform to any of the required input types." +
                     "\nThis value could not be updated.")
-    
+
     def removeClub(id): #Delete
         try:
             club = Club.objects.get(id=id)
@@ -246,15 +332,14 @@ class Club(models.Model):
 
 
 class ClubRep(Customer):
-    club = models.ForeignKey(Club, default=1, on_delete=models.CASCADE)
+    club = models.ForeignKey(Club, null=True, on_delete=models.CASCADE)
     club_rep_num = models.CharField(max_length=8)
-
-    """def __str__(self):
-        return "%s %s" % (self.first_name, self.last_name)"""
-
-
-
-
-
-
-# Create your models here.
+    #first_name = models.CharField(max_length=30)
+    #last_name = models.CharField(max_length=30)
+    #dob1 = models.DateField(("dob"), default=datetime.date.today)
+    #"A unique Club Representative number and unique password is allocated to the
+    #Club Representative."
+    #Therefore:
+    #- Unique CR number = username (inherited from User model), ensure that username is numbers only
+    #- Unique CR password = password (inherited from User model)
+    #- Create your models here.

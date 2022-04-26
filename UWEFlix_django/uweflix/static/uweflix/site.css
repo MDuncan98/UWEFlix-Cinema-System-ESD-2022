@@ -43,10 +43,30 @@ h1,h2,h3,h4,h5,h6{
 	width: 100px;
 }
 
-#id_adult_tickets, #id_student_tickets, #id_child_tickets {
-	width:75px;
+#id_adult_tickets, #id_student_tickets, #id_child_tickets, #id_total_cost, #discount-btn {
+	width:90px;
 	float: right;
-	padding: 5px;
+}
+
+#id_payment_options, #id_club, #id_card_number {
+	float:right;
+}
+
+.expiry-section {
+	float: right;
+}
+
+.expiry-label {
+	float:left;
+}
+
+#id_expiry_month, #id_expiry_year {
+	width: 60px;
+}
+
+#confirm-btn, #set-payment-btn {
+	width:100px;
+	float:right;
 }
 
 .form-field{
@@ -54,7 +74,33 @@ h1,h2,h3,h4,h5,h6{
 	display: inline-block;
 	padding: 5px;
 }
+.form-area {
+	width: 450px;
+}
 
+.form-group {
+	height:50px;
+	width: 500px;
+	margin: auto;
+	display: inline-block;
+	padding: 10px;
+}
+
+.alert-error {
+	color: red;
+}
+
+.topnav-right {
+	float: right;
+}
+
+.topnav-right a {
+	color: #f2f2f2;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+	font-size: 17px;
+  }
 .center {
 	margin: auto;
 	width: auto;

@@ -1,0 +1,16 @@
+{% extends "uweflix/layout.html" %}
+{% load static %}
+{% block title %}
+Add Rep
+{% endblock %}
+{% block content %}
+<h2>Welcome Add Rep Here</h2>
+    <form method="post" class="form-group">
+
+        {% csrf_token %}
+        {{ userform.as_p }}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-success">Add Rep</button>
+        </form>
+{% endblock %}

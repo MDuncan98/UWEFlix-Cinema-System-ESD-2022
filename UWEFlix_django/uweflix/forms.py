@@ -1,38 +1,135 @@
 from django import forms
 from uweflix.models import *
 from django.core.exceptions import ValidationError
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, MinLengthValidator
 from django.utils.safestring import mark_safe
+from django.db.models import Count
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from datetime import datetime
+from datetime import date
+import time
+import calendar
 
 """class EnterClubRepForm(forms.ModelForm):
     class Meta:
         model = ClubRep"""
 
+class SearchClubRepForm(forms.Form):
+    clubrep_choices = ()
+    for i in ClubRep.objects.all():
+        tmp = ((i.club_rep_num, i),)
+        clubrep_choices += tmp
+    clubrep_choice = forms.ChoiceField(choices=clubrep_choices)
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('username','email',)
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ('username',)
+
+class RegisterClubRepForm(forms.ModelForm):
+    class Meta:
+        model = ClubRep
+        fields = ('club', 'club_rep_num', 'dob')
+        dob = forms.DateField(widget=forms.DateInput())
+
+class RegisterStudentForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ('dob',)
+
+class AccessClubForm(forms.Form):
+    today = date.today()
+    club_choices = ((None, "Select a club:"),)
+    month_choices = ()
+    year_choices = ()
+    current_year = today.year #find a programmatical way of getting this
+    for i in range(Club.objects.all().count()):
+        tmp = ((Club.objects.get(id=i+1).id, Club.objects.get(id=i+1).name),)
+        club_choices += tmp
+    for i in range(12):
+        choice_string = ""
+        if i < 9:
+            choice_string += "0"
+        tmp = ((i+1, choice_string+str(i+1)),)
+        month_choices += tmp
+    for i in range(15):
+        tmp = ((current_year+i,current_year+i),)
+        year_choices += tmp
+    club = forms.ChoiceField(choices=club_choices)
+    card_number = forms.DecimalField(max_digits=16, decimal_places=0)
+    expiry_month = forms.ChoiceField(choices=month_choices)
+    expiry_year = forms.ChoiceField(choices=year_choices)
+
+    def clean(self):
+        card_number = self.cleaned_data.get('card_number')
+        expiry_month = self.cleaned_data.get('expiry_month')
+        expiry_year = self.cleaned_data.get('expiry_year')
+        try:
+            if len(str(int(card_number))) < 16:
+                raise forms.ValidationError("Card number is less than 16 digits.")
+        except:
+            raise forms.ValidationError("Card number is invalid. It must be 16 digits.")
+        expiry_date = date(int(expiry_year), int(expiry_month), calendar.monthrange(int(expiry_year), int(expiry_month))[1])
+        if expiry_date < self.today:
+            raise forms.ValidationError("The expiry date entered has already passed.")
+        return self.cleaned_data
+
 class PaymentForm(forms.Form):
     adult_tickets = forms.IntegerField(validators=[
         MaxValueValidator(100),
         MinValueValidator(0)
-    ],required=False)
+    ],required=False, initial=0)
     student_tickets = forms.IntegerField(validators=[
         MaxValueValidator(100),
         MinValueValidator(0)
-    ],required=False)
+    ],required=False, initial=0)
     child_tickets = forms.IntegerField(validators=[
         MaxValueValidator(100),
         MinValueValidator(0)
-    ],required=False)
+    ],required=False, initial=0)
+    total_cost=forms.FloatField(label="Total Cost: ", disabled=True, required=False)
     payment_choices = [(None, 'Select an option:'),
-                       ('credit', 'Pay with Credit'),
-                       ('nopay', 'Pay at Cinema on the day'),
-                       ('tab', 'Add to monthly bill (Club Reps only)')]
-    payment_options = forms.ChoiceField(choices=payment_choices, widget=forms.Select(attrs={'class': 'form-field'}))
-    discount_code = forms.CharField(required=False, max_length=8, widget=forms.TextInput(attrs={'class': 'form-field'}))
-
+                    ('credit', 'Pay with Credit'), 
+                    ('nopay', 'Pay at Cinema on the day'),
+                    ('tab', 'Add to monthly bill (Club Reps only)')]
+    payment_options = forms.ChoiceField(choices=payment_choices, widget=forms.Select(attrs={}))
+    discount_code = forms.CharField(required=False, max_length=8, widget=forms.TextInput(attrs={}))
     def clean(self):
         adult_tickets = self.cleaned_data.get('adult_tickets')
         student_tickets = self.cleaned_data.get('student_tickets')
         child_tickets = self.cleaned_data.get('child_tickets')
-        if not adult_tickets and not student_tickets and not child_tickets:
+        if adult_tickets == 0 and student_tickets == 0 and child_tickets == 0:
             raise forms.ValidationError("You must purchase at least one ticket type.")
-        #if adult_tickets < 0 or student_tickets < 0 or child_tickets < 0:
         return self.cleaned_data
+
+    def __setchoices__(self, newvalue):
+        self.payment_choices = newvalue
+
+
+class addClubForm(forms.ModelForm):
+    class Meta:
+        model = Club
+        fields = "__all__"
+        exclude = "card_number", "card_expiry_date", "discount_rate"
+
+class addRepForm(forms.ModelForm):
+    class Meta:
+        model = ClubRep
+        fields = "__all__"
+        exclude = "user", "credit", "club_rep_num"
+
+class ClubRepCreationForm(CustomUserCreationForm):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name',)
+
+
+"""class addClubAccountForm(forms.ModelForm):
+    class Meta:
+        model = ACCOUNT
+        fields = "__all__"""
