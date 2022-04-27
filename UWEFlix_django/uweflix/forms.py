@@ -16,10 +16,14 @@ import calendar
 
 class SearchClubRepForm(forms.Form):
     clubrep_choices = ()
+    timerange_choices = ((None, "Select a statement:"),
+                         ("Month", "Monthly Statement"),
+                         ("Year", "Annual Statement"))
     for i in ClubRep.objects.all():
         tmp = ((i.club_rep_num, i),)
         clubrep_choices += tmp
     clubrep_choice = forms.ChoiceField(choices=clubrep_choices)
+    timerange_choice = forms.ChoiceField(choices=timerange_choices)
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
@@ -42,12 +46,15 @@ class RegisterStudentForm(forms.ModelForm):
         model = Customer
         fields = ('dob',)
 
+class DatePickerForm(forms.Form):
+    date = forms.DateField()
+
 class AccessClubForm(forms.Form):
     today = date.today()
     club_choices = ((None, "Select a club:"),)
     month_choices = ()
     year_choices = ()
-    current_year = today.year #find a programmatical way of getting this
+    current_year = today.year
     for i in range(Club.objects.all().count()):
         tmp = ((Club.objects.get(id=i+1).id, Club.objects.get(id=i+1).name),)
         club_choices += tmp

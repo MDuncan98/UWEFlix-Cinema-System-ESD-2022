@@ -27,7 +27,7 @@ def club_rep_home(request):
     return render(request, 'uweflix/club_rep_home.html')
 
 def cinema_manager_home(request):
-    if request.user.is_authenticated:
+    #if request.user.is_authenticated:
         if request.session['user_group'] == "Cinema Manager":
             context = {}
             restrictions = Screen.objects.first().apply_covid_restrictions
@@ -43,8 +43,8 @@ def cinema_manager_home(request):
             return render(request, 'uweflix/cinema_manager_home.html', context)
         else:
             return redirect('/')
-    else:
-        return redirect('/')
+    #else:
+        #return redirect('/')
 
 def student_home(request):
     return render(request, 'uweflix/student_home.html')
@@ -147,7 +147,7 @@ def login(request):
                 return render (request, "uweflix/am_home.html")
             elif user.groups.filter(name='Cinema Manager').exists():
                 request.session['user_group'] = "Cinema Manager"
-                return render (request, "uweflix/Cinema_manager_home.html")
+                return render (request, "uweflix/cinema_manager_home.html")
         else:
             messages.error(request, "Bad Credentials")
     return render(request, "uweflix/login.html")
@@ -166,9 +166,8 @@ def userpage(request):
     context = {}
     return render(request, 'uweflix/user.html', context)
 
-def payment(request, showing): # Will also take showing_id as a param once showing page is completed!
+def payment(request, showing):
     showing = Showing.objects.get(id=showing)
-    #customer = Customer.objects.filter(id=1)
     form = PaymentForm()
     context = {
         "showing": showing,
@@ -189,7 +188,6 @@ def payment(request, showing): # Will also take showing_id as a param once showi
             else:
                 if 'user_id' in request.session:  # If signed in
                     user_type = request.session['user_group']
-                    #print(form.cleaned_data.get("payment_options"))
                     if (user_type == "Student" or user_type == "Club Rep"):
                         #Club reps and students
                         user = Customer.objects.get(user=request.session['user_id'])
@@ -248,25 +246,62 @@ def topup(request):
         return redirect('home')
 
 def view_accounts(request):
+    return render(request, "uweflix/view_accounts.html")
+
+def daily_transactions(request):
+    form = DatePickerForm()
+    titleText = "Please select a day to view transactions for:"
+    context = {
+        'form': form,
+        'title_text': titleText}
+    if request.method == "POST":
+        form = DatePickerForm(request.POST)
+        if form.is_valid():
+            selectedDate = form.cleaned_data['date']
+            transaction_list = Transaction.objects.filter(date = selectedDate)
+            if not transaction_list:
+                titleText = f"There were no transactions made on {str(selectedDate)}"
+                context = {
+                    'form': form,
+                    'title_text': titleText
+                }
+            else:
+                context = {
+                    'selected_date': selectedDate,
+                    'transaction_list': transaction_list,
+                    'form': form
+                }
+        return render(request, "uweflix/daily_transactions.html", context)
+    else:
+        return render(request, "uweflix/daily_transactions.html", context)
+
+def customer_statements(request):
     form = SearchClubRepForm()
     context = {'form':form}
     if request.method == "POST":
         form = SearchClubRepForm(request.POST)
         if form.is_valid():
             clubrep = ClubRep.objects.get(club_rep_num=form.cleaned_data['clubrep_choice'])
-            transaction_list = Transaction.objects.filter(
-                customer=clubrep,
-                date__year = dt.now().year,
-                date__month = dt.now().month
-            )
+            trange = form.cleaned_data['timerange_choice']
+            if trange == 'Month':
+                transaction_list = Transaction.objects.filter(
+                    customer=clubrep,
+                    date__year = dt.now().year,
+                    date__month = dt.now().month
+                )
+            elif trange == "Year":
+                transaction_list = Transaction.objects.filter(
+                    customer=clubrep,
+                    date__year = dt.now().year
+                )
             context = {
                 'club_rep_num': clubrep.club_rep_num,
                 'transaction_list': transaction_list,
                 'form': form
             }
-        return render(request, 'uweflix/view_accounts.html', context)
+        return render(request, 'uweflix/customer_statements.html', context)
     else:   
-        return render(request, 'uweflix/view_accounts.html', context)
+        return render(request, 'uweflix/customer_statements.html', context)
 
 def settle_payments(request):
     context = {}

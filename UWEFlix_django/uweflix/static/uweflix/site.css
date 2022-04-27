@@ -48,7 +48,7 @@ h1,h2,h3,h4,h5,h6{
 	float: right;
 }
 
-#id_payment_options, #id_club, #id_card_number {
+#id_payment_options, #id_club, #id_card_number, #id_clubrep_choices, #id_timerange_choices {
 	float:right;
 }
 

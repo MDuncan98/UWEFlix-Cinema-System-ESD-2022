@@ -109,46 +109,6 @@ class Film(models.Model):
     def __str__(self):
         return self.title
 
-    def newShowing(screen, film, ticketsLeft, socialDis):#CREATE
-        try:
-            showing = Showing.objects.create(screen=screen, film=film, time=datetime.today, remaining_tickets=ticketsLeft, apply_covid_restrictions=False)
-            return showing
-        except:
-            print("Showing object could not be created")
-
-    def getShowing(id):#READ
-        try:
-            showing = showing.object.get(id=id)
-            return showing
-        except:
-            print("No showing exists with that showing ID.")
-
-    def filmShowing(id, *showing_data): #UPDATE
-        try:
-            for data_item in showing_data:
-                if isinstance(data_item, Screen):
-                    Showing.objects.filter(pk=id).update(screen=data_item)
-                elif isinstance(data_item, Film):
-                    Showing.objects.filter(pk=id).update(film=data_item)
-                elif isinstance(data_item, float):
-                    Showing.object.filter(pk=id).update(time=data_item)
-                elif isinstance(data_item, int):
-                    Showing.objects.filter(pk=id).update(remaining_tickets=data_item)
-                elif isinstance(data_item, bool):
-                    Showing.objects.filter(pk=id).update(apply_covid_restrictions=False)
-                else:
-                    print(f"Data item {data_item} does not confrom to any of the  required input types." +
-                          "\nThis value could not be updated.")
-            return Showing.objects.get(id=id)
-        except:
-            print("An error occurred when updating this object.")
-
-    def deleteShowing(id): #DELETE
-        try:
-            showing = showing.objects.get(id=id)
-            showing.delete()
-        except:
-            print("This film Showing has Successfully been deleted.")
 
 class Screen(models.Model):
     capacity = models.IntegerField()
@@ -334,13 +294,14 @@ class Club(models.Model):
 class ClubRep(Customer):
     club = models.ForeignKey(Club, null=True, on_delete=models.CASCADE)
     club_rep_num = models.CharField(max_length=8)
+
+    def __str__(self):
+        return f"{self.club_rep_num} - {self.user.first_name} {self.user.last_name}"
     #first_name = models.CharField(max_length=30)
     #last_name = models.CharField(max_length=30)
-    #dob1 = models.DateField(("dob"), default=datetime.date.today)
     #"A unique Club Representative number and unique password is allocated to the
     #Club Representative."
     #Therefore:
     #- Unique CR number = username (inherited from User model), ensure that username is numbers only
     #- Unique CR password = password (inherited from User model)
-# Create your models here.
 

@@ -5,7 +5,14 @@ Add Rep
 {% endblock %}
 {% block content %}
 <h2>Welcome Add Rep Here</h2>
-    <form method="post" class="form-group">
+<script>
+    $( function() {
+      $( "#id_dob" ).datepicker({
+          dateFormat: "yy-mm-dd"
+      });
+    } );
+</script>
+    <form method="post" class="form-group" autocomplete="off">
 
         {% csrf_token %}
         {{ userform.as_p }}
