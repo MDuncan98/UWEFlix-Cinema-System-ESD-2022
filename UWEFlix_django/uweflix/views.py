@@ -15,6 +15,7 @@ from .forms import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group
 from django.contrib import messages
+from django.http import Http404
 
 
 def home(request):
@@ -167,12 +168,22 @@ def userpage(request):
     return render(request, 'uweflix/user.html', context)
 
 def payment(request, showing):
-    showing = Showing.objects.get(id=showing)
+    showing = Showing.getShowing(id=showing)
     form = PaymentForm()
     context = {
         "showing": showing,
         "form": form
     }
+    def sendToCardPayment(user, total_cost, adult_tickets, student_tickets, child_tickets):
+        context = {
+            'cost': total_cost,
+            'adult_tickets': adult_tickets,
+            'student_tickets': student_tickets,
+            'child_tickets': child_tickets,
+            'user': user
+        }
+        return render(request, "uweflix/pay_with_card.html", context)
+
     if request.method == 'POST':
         form = PaymentForm(request.POST)
         if form.is_valid():
@@ -191,41 +202,58 @@ def payment(request, showing):
                     if (user_type == "Student" or user_type == "Club Rep"):
                         #Club reps and students
                         user = Customer.objects.get(user=request.session['user_id'])
-                    if payment_option == 'credit' and user.credit >= total_cost: # If paying with credit
-                        user.credit -= total_cost
-                        request.session['credit'] = user.credit
-                        user.save()
-                        paying = True
-                    elif user_type == "Club Rep" and payment_option == "tab" or payment_option == "nopay":
-                        paying = False
+                        if payment_option == 'credit' and user.credit >= total_cost: # If paying with credit
+                            user.credit -= total_cost
+                            request.session['credit'] = user.credit
+                            user.save()
+                            paying = True
+                        elif user_type == "Club Rep" and payment_option == "tab":
+                            paying = False
+                        elif payment_option == "nopay":
+                            sendToCardPayment(user, total_cost, adult_tickets, student_tickets, child_tickets)
+                        else:
+                            context = {'error': "Credit error: You do not have sufficient credit to make this order, please add funds and try again."}
+                            return render(request, "uweflix/error.html", context)
                     else:
-                        return render(request, "uweflix/error.html")
+                        context = {'error': "Account based error: Your account type is not permitted to purchase tickets. Please change accounts and try again."}
+                        return render(request, "uweflix/error.html", context)
                 elif payment_option == "nopay":
-                    user = None
-                    paying = False
+                    sendToCardPayment(None, total_cost, adult_tickets, student_tickets, child_tickets)
                 else:
-                    return render(request, "uweflix/error.html")
-                new_transaction = Transaction.objects.create(customer=user, date=dt.today(), cost=total_cost, is_settled=paying)
+                    context = {'error': "As a regular customer, you may only make purchases via credit card. Please go back and select this option."}
+                    return render(request, "uweflix/error.html", context)
+                new_transaction = Transaction.newTransaction(user, total_cost, paying)
                 for i in range(adult_tickets):
-                    Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="adult")
+                    Ticket.newTicket(new_transaction, showing, "adult")
                 for i in range(student_tickets):
-                    Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="student")
+                    Ticket.newTicket(new_transaction, showing, "student")
                 for i in range(child_tickets):
-                    Ticket.objects.create(transaction=new_transaction, showing=showing, ticket_type="child")
+                    Ticket.newTicket(new_transaction, showing, "child")
                 showing.remaining_tickets -= (adult_tickets + student_tickets + child_tickets)
                 showing.save()
-                print("Success")
-                return render(request, "uweflix/thanks.html")
+                request.session['screen'] = showing.screen.id
+                request.session['transaction'] = new_transaction.id
+                request.session['film'] = showing.film.title
+                request.session['age_rating'] = showing.film.age_rating
+                request.session['date'] = showing.time.strftime("%d/%m/%y")
+                request.session['time'] = showing.time.strftime("%H:%M")
+                request.session['successful_purchase'] = True
+                return redirect('/thanks')
         else:
             return render(request, 'uweflix/payment.html', context={'form':form, "showing": showing})
-
     return render(request, 'uweflix/payment.html', context)
 
+def pay_with_card(request):
+    return render(request, "uweflix/pay_with_card.html")
+
 def thanks(request):
-    render(request, "uweflix/thanks.html")
+    if 'successful_purchase' not in request.session:
+        raise Http404("Forbidden access to this page.")
+    del request.session['successful_purchase']
+    return render(request, "uweflix/thanks.html")
 
 def error(request):
-    render(request, "uweflix/error.html")
+    return render(request, "uweflix/error.html")
 
 def topup(request):
     if 'user_group' in request.session:
@@ -257,7 +285,11 @@ def daily_transactions(request):
     if request.method == "POST":
         form = DatePickerForm(request.POST)
         if form.is_valid():
-            selectedDate = form.cleaned_data['date']
+            selectedDate = dt.today()
+            if "search" in request.POST:
+                selectedDate = form.cleaned_data['date']
+            elif "today" in request.POST:
+                selectedDate = dt.today()
             transaction_list = Transaction.objects.filter(date = selectedDate)
             if not transaction_list:
                 titleText = f"There were no transactions made on {str(selectedDate)}"

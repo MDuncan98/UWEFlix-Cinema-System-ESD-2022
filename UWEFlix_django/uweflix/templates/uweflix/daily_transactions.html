@@ -73,8 +73,13 @@ Customer Statements
         <div class="form-field">
         Date: {{ form.date }}
         </div>
-        <button type="submit" class="btn btn-warning">Search</button>
+        <button name="search" type="submit" class="btn btn-warning">Search</button>
         </div>
+        <br/>
+        <b>or:</b>
+        <br/>
+        <br/>
+        <button name="today" type="submit" class="btn btn-warning">Show Today's Transactions</button>
     </form>
     </center>
 {% endblock %}

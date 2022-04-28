@@ -101,9 +101,9 @@ class PaymentForm(forms.Form):
     ],required=False, initial=0)
     total_cost=forms.FloatField(label="Total Cost: ", disabled=True, required=False)
     payment_choices = [(None, 'Select an option:'),
-                    ('credit', 'Pay with Credit'), 
-                    ('nopay', 'Pay at Cinema on the day'),
-                    ('tab', 'Add to monthly bill (Club Reps only)')]
+                    ('nopay', 'Customer: Pay with Card'),
+                    ('credit', 'Student/Club Reps: Pay with Credit'), 
+                    ('tab', 'Club Reps: Add to monthly bill')]
     payment_options = forms.ChoiceField(choices=payment_choices, widget=forms.Select(attrs={}))
     discount_code = forms.CharField(required=False, max_length=8, widget=forms.TextInput(attrs={}))
     def clean(self):

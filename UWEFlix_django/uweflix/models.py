@@ -4,6 +4,7 @@ from tokenize import String
 from xml.dom.minidom import CharacterData
 from django.db import models
 from django.contrib.auth.models import *
+from datetime import datetime as dt
 import datetime
 
 class User(AbstractUser):
@@ -22,7 +23,7 @@ class Transaction(models.Model):  # Database for storing all of the 'accounts' t
 
     def newTransaction(cust, cost, is_paid): #CREATE
         try:
-            transaction = Transaction.objects.create(customer=cust, date=datetime.today(), cost=cost, is_settled=is_paid)
+            transaction = Transaction.objects.create(customer=cust, date=dt.today(), cost=cost, is_settled=is_paid)
             return transaction
         except:
             print("Transaction object could not be created.")
@@ -152,16 +153,19 @@ class Showing(models.Model):
     time = models.DateTimeField()
     remaining_tickets = models.IntegerField(default=150)  # NEEDS TO BE ASSIGNED TO THE SCREEN CAPACITY SOMEHOW!
 
-    def newShowing(screen, film, ticketsLeft, socialDis):#CREATE
+    def newShowing(screen, film, time, ticketsLeft):#CREATE
         try:
-            showing = Showing.objects.create(screen=screen, film=film, time=datetime.today, remaining_tickets=ticketsLeft, apply_covid_restrictions=False)
+            showing = Showing.objects.create(screen=screen, film=film, time=time, remaining_tickets=ticketsLeft)
+            if screen.apply_covid_restrictions == True:
+                showing.remaining_tickets = showing.remaining_tickets / 2
+                showing.save()
             return showing
         except:
             print("Showing object could not be created")
 
     def getShowing(id):#READ
         try:
-            showing = showing.object.get(id=id)
+            showing = Showing.objects.get(id=id)
             return showing
         except:
             print("No showinf exists with that showing ID.")
@@ -174,7 +178,7 @@ class Showing(models.Model):
                 elif isinstance(data_item, Film):
                     Showing.objects.filter(pk=id).update(film=data_item)
                 elif isinstance(data_item, float):
-                    Showing.object.filter(pk=id).update(time=data_item)
+                    Showing.objects.filter(pk=id).update(time=data_item)
                 elif isinstance(data_item, int):
                     Showing.objects.filter(pk=id).update(remaining_tickets=data_item)
                 elif isinstance(data_item, bool):
@@ -188,7 +192,7 @@ class Showing(models.Model):
 
     def deleteShowing(id): #DELETE
         try:
-            showing = showing.objects.get(id=id)
+            showing = Showing.objects.get(id=id)
             showing.delete()
         except:
             print("This film Showing has Successfully been deleted.")

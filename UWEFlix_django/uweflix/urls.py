@@ -5,7 +5,7 @@ from uweflix.models import *
 
 
 urlpatterns = [
-    path("", views.home, name="home"),
+    path("", views.viewings, name="home"),
     path("viewings/", views.viewings, name="viewings"),
     path("showings/<int:film>/", views.showings, name="showings_by_film"),
     path("add_film/", views.add_film, name="add_film"),
@@ -15,6 +15,7 @@ urlpatterns = [
     path("register/", views.registerPage, name="registerPage"),
     path("register_cr/", views.register_clubrep, name="register_clubrep"),
     path("payment/<int:showing>/", views.payment, name="payment"),
+    path("pay_with_card/", views.pay_with_card, name="pay_with_card"),
     path("view_accounts/", views.view_accounts, name="view_accounts"),
     path("daily_transactions/", views.daily_transactions, name="daily_transactions"),
     path("customer_statements/", views.customer_statements, name="customer_statements"),
