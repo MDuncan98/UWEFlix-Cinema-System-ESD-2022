@@ -27,7 +27,7 @@ Showings
 
 <div class="row">
     <div class="center">
-        <img class="thumbnail" src="{% static 'uweflix/images/placeholder.png' %}">
+        <img class="thumbnail" src="{{ film.image.url }}">
         <div class="box-element film">
             <h6><strong>{{film.title}}</strong></h6>
             <br>
@@ -38,6 +38,7 @@ Showings
         <hr>
         <h3>Showings for {{film.title}}</h3>        
         {% for showing in showings %}
+        {% if showing.remaining_tickets > 0 %}
         <div class ="showing-box">
             <div class="box-element film">
                 <h6><strong>{{ showing.time | date:'j M Y' }}</strong></h6>
@@ -50,6 +51,7 @@ Showings
                 </div> 
             </div>
         </div>
+        {% endif %}
         {% endfor %}
     </div>
 </div>

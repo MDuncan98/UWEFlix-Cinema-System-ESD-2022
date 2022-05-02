@@ -28,7 +28,13 @@ class SearchClubRepForm(forms.Form):
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('username','email',)
+        fields = ('username','email', 'first_name', 'last_name')
+
+    def __init__(self, *args, **kwargs):
+        super(CustomUserCreationForm, self).__init__(*args, **kwargs)
+
+        for fieldname in ['password1', 'password2']:
+            self.fields[fieldname].help_text = None
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
@@ -47,7 +53,7 @@ class RegisterStudentForm(forms.ModelForm):
         fields = ('dob',)
 
 class DatePickerForm(forms.Form):
-    date = forms.DateField()
+    date = forms.DateField(required=False)
 
 class AccessClubForm(forms.Form):
     today = date.today()
@@ -135,8 +141,3 @@ class ClubRepCreationForm(CustomUserCreationForm):
         model = User
         fields = ('first_name', 'last_name',)
 
-
-"""class addClubAccountForm(forms.ModelForm):
-    class Meta:
-        model = ACCOUNT
-        fields = "__all__"""

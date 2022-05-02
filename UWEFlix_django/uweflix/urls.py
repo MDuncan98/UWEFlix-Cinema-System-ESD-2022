@@ -13,7 +13,7 @@ urlpatterns = [
     path("topup/", views.topup, name="topup"),
     path("logout/", views.logout, name="logout"),
     path("register/", views.registerPage, name="registerPage"),
-    path("register_cr/", views.register_clubrep, name="register_clubrep"),
+    #path("register_cr/", views.register_clubrep, name="register_clubrep"),
     path("payment/<int:showing>/", views.payment, name="payment"),
     path("pay_with_card/", views.pay_with_card, name="pay_with_card"),
     path("view_accounts/", views.view_accounts, name="view_accounts"),
@@ -31,4 +31,5 @@ urlpatterns = [
     path("add_account/", views.addClubAccount, name="add_account"),
     path("settle_payments/", views.settle_payments, name="settle_payments"),
     path("review_students/<int:userID>", views.review_students, name="review_students"),
+    path("rep_success/", views.rep_success, name="rep_success"),
 ]

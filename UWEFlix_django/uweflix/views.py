@@ -22,7 +22,12 @@ def home(request):
     return render(request, 'uweflix/index.html')
 
 def am_home(request):
-    return render(request, 'uweflix/am_home.html')
+    transactions = Transaction.objects.filter(date = dt.today())
+    transactions = transactions.count()
+    context = {
+        'transactions': transactions
+    }
+    return render(request, 'uweflix/am_home.html', context)
 
 def club_rep_home(request):
     return render(request, 'uweflix/club_rep_home.html')
@@ -76,6 +81,11 @@ def add_film(request):
                 film.age_rating = age_rating
                 film.duration = duration
                 film.trailer_desc = trailer_desc
+                try:
+                    image = request.FILES.get('image')
+                    film.image = image
+                except:
+                    pass
                 film.save()
             else:
                 print("Invalid Age Rating")
@@ -98,34 +108,12 @@ def registerPage(request):
             if customer_form.is_valid():
                 dob = customer_form.cleaned_data['dob']
                 user=form.save()
-                #user.is_active = False
+                user.is_active = False
                 student = Customer.objects.create(user=user, dob=dob)
                 group=Group.objects.get(name='Student')
                 group.user_set.add(user)
-                return render(request, 'uweflix/index.html')
+                return render(request, 'uweflix/viewings.html')
     return render(request, 'uweflix/register.html', context)
-
-def register_clubrep(request):
-    userForm = CustomUserCreationForm()
-    crForm = RegisterClubRepForm()
-    context = {'user_form': userForm,
-               'cr_form': crForm}
-    if request.method == "POST":
-        userForm = CustomUserCreationForm(request.POST)
-        crForm = RegisterClubRepForm(request.POST)
-        if userForm.is_valid():
-            if crForm.is_valid():
-                newUser = userForm.save()
-                club = crForm.cleaned_data['club']
-                crNum = crForm.cleaned_data['club_rep_num']
-                dob = crForm.cleaned_data['dob']
-                ClubRep.objects.create(user=newUser, club=club, club_rep_num=crNum, dob=dob)
-                print("yes")
-            else:
-                print("cr no")
-        else:
-            print("user no")
-    return render(request, 'uweflix/register_cr.html', context)
 
 #@unauthenticated_user
 def login(request):
@@ -402,7 +390,6 @@ def add_rep(request):
     context = {}
     userForm = ClubRepCreationForm()
     form = addRepForm()
-
     if request.method == "POST":
         userForm = ClubRepCreationForm(request.POST)
         form = addRepForm(request.POST)
@@ -417,14 +404,22 @@ def add_rep(request):
                 crUsername = ("%04d" % (clubRepNum,))
                 user.username = crUsername
                 user.save()
-                ClubRep.objects.create(user=user, club=club, dob=dob, club_rep_num=clubRepNum)
+                newCr = ClubRep.objects.create(user=user, club=club, dob=dob, club_rep_num=clubRepNum)
                 userGroup = Group.objects.get(name="Club Rep")
                 user.groups.add(userGroup)
-                messages.success(request, "Rep successfully added.")
-                return redirect('/add_rep')
+                request.session['new_cr'] = newCr.club_rep_num
+                request.session['new_club'] = newCr.club.name
+                request.session['successful_creation'] = True
+                return redirect("/rep_success")
     context['form'] = form
     context['userform'] = userForm
-    return render(request, "Uweflix/add_rep.html", context)
+    return render(request, "uweflix/add_rep.html", context)
+
+def rep_success(request):
+    if 'successful_creation' not in request.session:
+        raise Http404("Forbidden access to this page.")
+    del request.session['successful_creation']
+    return render(request, "uweflix/rep_success.html")
 
 def addClubAccount(request):
     """context = {}
@@ -473,3 +468,33 @@ def review_students(request, userID):
             return redirect('review_students', userID=0) 
     
     return render(request, "UweFlix/review_students.html", context)
+
+
+    """def register_clubrep(request):
+    userForm = CustomUserCreationForm()
+    crForm = RegisterClubRepForm()
+    context = {'user_form': userForm,
+               'cr_form': crForm}
+    if request.method == "POST":
+        userForm = CustomUserCreationForm(request.POST)
+        crForm = RegisterClubRepForm(request.POST)
+        if userForm.is_valid():
+            if crForm.is_valid():
+                newUser = userForm.save()
+                club = crForm.cleaned_data['club']
+                crNum = crForm.cleaned_data['club_rep_num']
+                dob = crForm.cleaned_data['dob']
+                newCr = ClubRep.objects.create(user=newUser, club=club, club_rep_num=crNum, dob=dob)
+                context += {'club_rep': newCr}
+                return render(request, "uweflix/add_rep.html", context)
+            else:
+                context = {
+                    'error': "Invalid Club Rep Credentials (Date of Birth & Club): Please go back and try again."
+                }
+                return render(request, "uweflix/error.html", context)
+        else:
+            context = {
+                    'error': "Invalid User Credentials (Name & Password): Please go back and try again."
+                }
+            return render(request, "uweflix/error.html", context)
+    return render(request, 'uweflix/register_cr.html', context)"""
