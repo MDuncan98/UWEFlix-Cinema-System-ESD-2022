@@ -1,3 +1,4 @@
-# Group-18-ESD-2022
-ESD group project
-Test - does this work?
+# Group 18 ESD group project 2022
+
+By Arjun Binning, Benedict Ramage-Mangles, Matthew Hill, Michael Duncan, Ross Williams
+
