@@ -162,15 +162,6 @@ def payment(request, showing):
         "showing": showing,
         "form": form
     }
-    def sendToCardPayment(user, total_cost, adult_tickets, student_tickets, child_tickets):
-        context = {
-            'cost': total_cost,
-            'adult_tickets': adult_tickets,
-            'student_tickets': student_tickets,
-            'child_tickets': child_tickets,
-            'user': user
-        }
-        return render(request, "uweflix/pay_with_card.html", context)
 
     if request.method == 'POST':
         form = PaymentForm(request.POST)
@@ -198,15 +189,16 @@ def payment(request, showing):
                         elif user_type == "Club Rep" and payment_option == "tab":
                             paying = False
                         elif payment_option == "nopay":
-                            sendToCardPayment(user, total_cost, adult_tickets, student_tickets, child_tickets)
+                            return redirect(f'/pay_with_card/?user={user.id}&cost={total_cost}&adult={adult_tickets}&student={student_tickets}&child={child_tickets}')
                         else:
                             context = {'error': "Credit error: You do not have sufficient credit to make this order, please add funds and try again."}
                             return render(request, "uweflix/error.html", context)
                     else:
                         context = {'error': "Account based error: Your account type is not permitted to purchase tickets. Please change accounts and try again."}
                         return render(request, "uweflix/error.html", context)
-                elif payment_option == "nopay":
-                    sendToCardPayment(None, total_cost, adult_tickets, student_tickets, child_tickets)
+                elif payment_option == "nopay":  # Regular customer pays with card
+                    print("hello")
+                    return redirect(f'/pay_with_card/?user={0}&cost={total_cost}&adult={adult_tickets}&student={student_tickets}&child={child_tickets}')
                 else:
                     context = {'error': "As a regular customer, you may only make purchases via credit card. Please go back and select this option."}
                     return render(request, "uweflix/error.html", context)
@@ -232,7 +224,36 @@ def payment(request, showing):
     return render(request, 'uweflix/payment.html', context)
 
 def pay_with_card(request):
-    return render(request, "uweflix/pay_with_card.html")
+    context = {
+        'user': request.GET.get('user'),
+        'cost': request.GET.get('cost'),
+        'adult': request.GET.get('adult'),
+        'student': request.GET.get('student'),
+        'child': request.GET.get('child')
+    }
+    print(context['cost'])
+
+    """Form that takes 16 digit card number, expiry date, security code.
+    If form is valid, do code below."""
+
+    """new_transaction = Transaction.newTransaction(user, total_cost, paying)
+                for i in range(adult_tickets):
+                    Ticket.newTicket(new_transaction, showing, "adult")
+                for i in range(student_tickets):
+                    Ticket.newTicket(new_transaction, showing, "student")
+                for i in range(child_tickets):
+                    Ticket.newTicket(new_transaction, showing, "child")
+                showing.remaining_tickets -= (adult_tickets + student_tickets + child_tickets)
+                showing.save()
+                request.session['screen'] = showing.screen.id
+                request.session['transaction'] = new_transaction.id
+                request.session['film'] = showing.film.title
+                request.session['age_rating'] = showing.film.age_rating
+                request.session['date'] = showing.time.strftime("%d/%m/%y")
+                request.session['time'] = showing.time.strftime("%H:%M")
+                request.session['successful_purchase'] = True
+                return redirect('/thanks')"""
+    return render(request, "uweflix/pay_with_card.html", context)
 
 def thanks(request):
     if 'successful_purchase' not in request.session:
