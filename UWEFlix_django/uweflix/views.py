@@ -17,6 +17,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group
 from django.contrib import messages
 from django.http import Http404
+from django.utils import timezone
 
 
 def home(request):
@@ -525,6 +526,37 @@ def review_students(request, userID):
             studentChoice = students.first()
             return redirect('review_students', userID=0)
     return render(request, "UweFlix/review_students.html", context)
+def view_order_history(request):
+    form = DateIntervalForm()
+    titleText = "Please select a date range to view transactions for:"
+    context = {
+        'form': form,
+        'title_text': titleText}
+    if request.method == "POST":
+        form = DateIntervalForm(request.POST)
+        if form.is_valid():
+            startDate = form.cleaned_data['startDate']
+            endDate = form.cleaned_data['endDate']
+            transaction_list = Transaction.objects.filter(date__range = (startDate, endDate))
+            if not transaction_list:
+                titleText = f"There were no transactions made in your date range"
+                context = {
+                    'form': form,
+                    'title_text': titleText
+                }
+            else:
+                context = {
+                    'start_date': startDate,
+                    'end_date': endDate,
+                    'transaction_list': transaction_list,
+                    'form': form
+                }
+            form = DateIntervalForm()
+        return render(request, "UweFlix/view_order_history.html", context)
+    else:
+        return render(request, "UweFlix/view_order_history.html", context)
+
+
 
 def change_ticket_prices(request):
     form = ChangePriceForm()
@@ -537,7 +569,37 @@ def change_ticket_prices(request):
             Prices.changePrices(form.cleaned_data['adult'],form.cleaned_data['student'], form.cleaned_data['child'])
             adult,student,child=Prices.getCurrentPrices()
             print(adult)
-        else:
-            return render(request,"uweflix/change_ticket_prices.html",{'form':form})
 
-    return render(request,"uweflix/change_ticket_prices.html",context)
+def request_cancellation(request):
+    now = timezone.now()
+    user = None
+    showingsToCancel = []
+    adultTickets = []
+    childTickets = []
+    studentTickets = []
+    if request.session["user_group"] == "Club Rep":
+        user = ClubRep.objects.get(user_id=request.session["user_id"])
+    elif request.session["user_group"] == "Student":
+        user = Customer.objects.get(user=request.session["user_id"])
+    if user is not None:
+        transaction_list = Transaction.objects.filter(customer=user, request_to_cancel=False)
+        for purchase in transaction_list:
+            allTickets = Ticket.objects.filter(transaction=purchase)
+            ticket = allTickets.first()
+            if ticket is not None:
+                showingTime = ticket.showing.time
+                if showingTime > now:
+                    showingsToCancel.append(ticket)
+                    adultTickets.append(len(allTickets.filter(ticket_type="adult")))
+                    childTickets.append(len(allTickets.filter(ticket_type="child")))
+                    studentTickets.append(len(allTickets.filter(ticket_type="student")))
+    zippedList = zip(showingsToCancel, adultTickets, childTickets, studentTickets)
+    context = {
+        'zipped': zippedList
+    }
+    if request.method == "POST":
+        requestedTransaction = Transaction.objects.filter(id=request.POST.get('transaction_number'))
+        requestedTransaction.update(request_to_cancel=True)
+        return redirect('request_cancellation') 
+    return render(request, "UweFlix/request_cancellation.html", context)
+

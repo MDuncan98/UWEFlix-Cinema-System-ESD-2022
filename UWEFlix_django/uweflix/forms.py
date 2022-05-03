@@ -55,6 +55,10 @@ class RegisterStudentForm(forms.ModelForm):
 class DatePickerForm(forms.Form):
     date = forms.DateField(required=False)
 
+class DateIntervalForm(forms.Form):
+    startDate = forms.DateField(required=True)
+    endDate = forms.DateField(required=False)
+
 class AccessClubForm(forms.Form):
     today = date.today()
     club_choices = ((None, "Select a club:"),)

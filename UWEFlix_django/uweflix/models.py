@@ -20,7 +20,7 @@ class Transaction(models.Model):  # Database for storing all of the 'accounts' t
     date = models.DateField()  # Date of transaction
     cost = models.FloatField()  # Cost of transaction
     is_settled = models.BooleanField()  # Whether the transaction has been paid
-
+    request_to_cancel = models.BooleanField(default=False)
     def newTransaction(cust, cost, is_paid): #CREATE
         try:
             transaction = Transaction.objects.create(customer=cust, date=dt.today(), cost=cost, is_settled=is_paid)
