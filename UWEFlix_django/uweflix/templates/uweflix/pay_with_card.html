@@ -6,5 +6,11 @@ Viewings
 {% block content %}
 <h1>Payment</h1>
 <p>Amount to pay: £{{cost| floatformat:2}}</p>
-{{ adult }}
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-area">
+    {{form.as_p}}
+    <input id="confirm-btn" class="btn btn-warning" type="submit" value="Pay">
+    <div>
+<form>
 {% endblock %}

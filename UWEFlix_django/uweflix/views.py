@@ -1,5 +1,6 @@
 from multiprocessing import context
 from sys import float_repr_style
+from urllib import request
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse
 from django.template import ContextPopException
@@ -189,7 +190,7 @@ def payment(request, showing):
                         elif user_type == "Club Rep" and payment_option == "tab":
                             paying = False
                         elif payment_option == "nopay":
-                            return redirect(f'/pay_with_card/?user={user.id}&cost={total_cost}&adult={adult_tickets}&student={student_tickets}&child={child_tickets}')
+                            return redirect(f'/pay_with_card/?user={user.id}&cost={total_cost}&adult={adult_tickets}&student={student_tickets}&child={child_tickets}&showing={showing.id}')
                         else:
                             context = {'error': "Credit error: You do not have sufficient credit to make this order, please add funds and try again."}
                             return render(request, "uweflix/error.html", context)
@@ -198,7 +199,7 @@ def payment(request, showing):
                         return render(request, "uweflix/error.html", context)
                 elif payment_option == "nopay":  # Regular customer pays with card
                     print("hello")
-                    return redirect(f'/pay_with_card/?user={0}&cost={total_cost}&adult={adult_tickets}&student={student_tickets}&child={child_tickets}')
+                    return redirect(f'/pay_with_card/?user={0}&cost={total_cost}&adult={adult_tickets}&student={student_tickets}&child={child_tickets}&showing={showing.id}')
                 else:
                     context = {'error': "As a regular customer, you may only make purchases via credit card. Please go back and select this option."}
                     return render(request, "uweflix/error.html", context)
@@ -224,14 +225,50 @@ def payment(request, showing):
     return render(request, 'uweflix/payment.html', context)
 
 def pay_with_card(request):
+    form = CardPaymentForm()
     context = {
         'user': request.GET.get('user'),
         'cost': request.GET.get('cost'),
         'adult': request.GET.get('adult'),
         'student': request.GET.get('student'),
-        'child': request.GET.get('child')
+        'child': request.GET.get('child'),
+        'showing': request.GET.get('showing'),
+        'form':form
     }
-    print(context['cost'])
+    if request.method=="POST":
+        form = CardPaymentForm(request.POST)
+        if form.is_valid():
+            id = int(context['user'])
+            user=None
+            if id == 0:
+                pass
+            else:
+                user= Customer.objects.get(id= context['user'])
+            total_cost = float(context['cost'])
+            adult_tickets = int(context['adult'])
+            child_tickets = int(context['child'])
+            student_tickets = int(context['student'])
+            showing = Showing.getShowing(int(context['showing']))
+            new_transaction = Transaction.newTransaction(user, total_cost, True)
+            for i in range(adult_tickets):
+                Ticket.newTicket(new_transaction, showing, "adult")
+            for i in range(student_tickets):
+                Ticket.newTicket(new_transaction, showing, "student")
+            for i in range(child_tickets):
+                Ticket.newTicket(new_transaction, showing, "child")
+            showing.remaining_tickets -= (adult_tickets + student_tickets + child_tickets)
+            showing.save()
+            request.session['screen'] = showing.screen.id
+            request.session['transaction'] = new_transaction.id
+            request.session['film'] = showing.film.title
+            request.session['age_rating'] = showing.film.age_rating
+            request.session['date'] = showing.time.strftime("%d/%m/%y")
+            request.session['time'] = showing.time.strftime("%H:%M")
+            request.session['successful_purchase'] = True
+            return redirect('/thanks')
+        else: return render(request,"uweflix/pay_with_card.html",{'form':form})
+
+    return render(request,"uweflix/pay_with_card.html",context)
 
     """Form that takes 16 digit card number, expiry date, security code.
     If form is valid, do code below."""
@@ -278,7 +315,7 @@ def topup(request):
             loggedInRep.credit = loggedInRep.credit + round(float(topUpValue), 2)
             request.session['credit'] = loggedInRep.credit
             loggedInRep.save()
-        return render(request, "uweflix/topup.html")   
+        return render(request, "uweflix/topup.html")
     else:
         return redirect('home')
 
@@ -341,7 +378,7 @@ def customer_statements(request):
                 'form': form
             }
         return render(request, 'uweflix/customer_statements.html', context)
-    else:   
+    else:
         return render(request, 'uweflix/customer_statements.html', context)
 
 def settle_payments(request):
@@ -465,9 +502,9 @@ def review_students(request, userID):
     students = User.objects.filter(is_active=False)
     studentChoice = students.first()
     if userID == 0 and studentChoice is not None:
-        return redirect('review_students', userID=studentChoice.id) 
+        return redirect('review_students', userID=studentChoice.id)
     if userID != 0:
-        studentChoice = User.objects.get(id = userID)  
+        studentChoice = User.objects.get(id = userID)
     context = {
         'students' : students,
         'chosenStudent' : studentChoice,
@@ -486,36 +523,21 @@ def review_students(request, userID):
                 studentChoice.delete()
             students = User.objects.filter(is_active=False)
             studentChoice = students.first()
-            return redirect('review_students', userID=0) 
-    
+            return redirect('review_students', userID=0)
     return render(request, "UweFlix/review_students.html", context)
 
-
-    """def register_clubrep(request):
-    userForm = CustomUserCreationForm()
-    crForm = RegisterClubRepForm()
-    context = {'user_form': userForm,
-               'cr_form': crForm}
-    if request.method == "POST":
-        userForm = CustomUserCreationForm(request.POST)
-        crForm = RegisterClubRepForm(request.POST)
-        if userForm.is_valid():
-            if crForm.is_valid():
-                newUser = userForm.save()
-                club = crForm.cleaned_data['club']
-                crNum = crForm.cleaned_data['club_rep_num']
-                dob = crForm.cleaned_data['dob']
-                newCr = ClubRep.objects.create(user=newUser, club=club, club_rep_num=crNum, dob=dob)
-                context += {'club_rep': newCr}
-                return render(request, "uweflix/add_rep.html", context)
-            else:
-                context = {
-                    'error': "Invalid Club Rep Credentials (Date of Birth & Club): Please go back and try again."
-                }
-                return render(request, "uweflix/error.html", context)
+def change_ticket_prices(request):
+    form = ChangePriceForm()
+    context = {
+        'form':form
+    }
+    if request.method=="POST":
+        form = ChangePriceForm (request.POST)
+        if form.is_valid():
+            Prices.changePrices(form.cleaned_data['adult'],form.cleaned_data['student'], form.cleaned_data['child'])
+            adult,student,child=Prices.getCurrentPrices()
+            print(adult)
         else:
-            context = {
-                    'error': "Invalid User Credentials (Name & Password): Please go back and try again."
-                }
-            return render(request, "uweflix/error.html", context)
-    return render(request, 'uweflix/register_cr.html', context)"""
+            return render(request,"uweflix/change_ticket_prices.html",{'form':form})
+
+    return render(request,"uweflix/change_ticket_prices.html",context)

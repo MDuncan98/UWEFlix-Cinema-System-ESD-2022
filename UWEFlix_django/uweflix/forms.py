@@ -141,3 +141,39 @@ class ClubRepCreationForm(CustomUserCreationForm):
         model = User
         fields = ('first_name', 'last_name',)
 
+class CardPaymentForm(forms.Form):
+    today = date.today()
+    month_choices = ()
+    year_choices = ()
+    current_year = today.year
+    for i in range(12):
+        choice_string = ""
+        if i < 9:
+            choice_string += "0"
+        tmp = ((i+1, choice_string+str(i+1)),)
+        month_choices += tmp
+    for i in range(15):
+        tmp = ((current_year+i,current_year+i),)
+        year_choices += tmp
+    card_number = forms.DecimalField(max_digits=16, decimal_places=0)
+    expiry_month = forms.ChoiceField(choices=month_choices)
+    expiry_year = forms.ChoiceField(choices=year_choices)
+
+    def clean(self):
+        card_number = self.cleaned_data.get('card_number')
+        expiry_month = self.cleaned_data.get('expiry_month')
+        expiry_year = self.cleaned_data.get('expiry_year')
+        try:
+            if len(str(int(card_number))) < 16:
+                raise forms.ValidationError("Card number is less than 16 digits.")
+        except:
+            raise forms.ValidationError("Card number is invalid. It must be 16 digits.")
+        expiry_date = date(int(expiry_year), int(expiry_month), calendar.monthrange(int(expiry_year), int(expiry_month))[1])
+        if expiry_date < self.today:
+            raise forms.ValidationError("The expiry date entered has already passed.")
+        return self.cleaned_data
+
+class ChangePriceForm(forms.ModelForm):
+   class Meta:
+        model = Prices
+        fields = "__all__"
