@@ -32,4 +32,6 @@ urlpatterns = [
     path("settle_payments/", views.settle_payments, name="settle_payments"),
     path("review_students/<int:userID>", views.review_students, name="review_students"),
     path("rep_success/", views.rep_success, name="rep_success"),
+    path("view_order_history/", views.view_order_history, name="view_order_history"),
+    path("request_cancellation", views.request_cancellation, name="request_cancellation"),
 ]
