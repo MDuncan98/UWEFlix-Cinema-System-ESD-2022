@@ -19,6 +19,10 @@ then open a web browser at http://localhost:8000
 
 Install instructions - Windows
 -----
+clone from github
+```
+git clone git@github.com:bean64/Group-18-ESD-2022.git
+```
 set up a venv
 ```
 py -3 -m venv .venv
@@ -26,8 +30,7 @@ py -3 -m venv .venv
 ```
 and install
 ```
-git clone git@github.com:bean64/Group-18-ESD-2022.git
-cd Group-18-ESD-2022/UWEFlix_django/
+cd Group-18-ESD-2022\UWEFlix_django\
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 python3 manage.py makemigrations
