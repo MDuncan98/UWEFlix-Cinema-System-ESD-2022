@@ -56,7 +56,7 @@ Settle Payments
                 <tr>
                     <td>{{ outstanding_transaction.id }}</td>
                     <td>{{ outstanding_transaction.date | date:'d M Y' }}</td>
-                    <td>£{{ outstanding_transaction.cost }}</td>
+                    <td>£{{ outstanding_transaction.cost | floatformat:2 }}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -66,7 +66,7 @@ Settle Payments
             <input type="submit" value="Settle", class="settleButton">
         </form>
     {%else%}
-        <h3>No Outstanding Transcations!</h3>
+        <h3>No Outstanding Transactions!</h3>
     {% endif %}
 
 

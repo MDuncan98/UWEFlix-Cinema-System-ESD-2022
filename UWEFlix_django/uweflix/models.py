@@ -22,7 +22,7 @@ class Transaction(models.Model):  # Database for storing all of the 'accounts' t
     date = models.DateField()  # Date of transaction
     cost = models.FloatField()  # Cost of transaction
     is_settled = models.BooleanField()  # Whether the transaction has been paid
-
+    request_to_cancel = models.BooleanField(default=False)
     def newTransaction(cust, cost, is_paid): #CREATE
         try:
             transaction = Transaction.objects.create(customer=cust, date=dt.today(), cost=cost, is_settled=is_paid)
@@ -75,6 +75,7 @@ class Film(models.Model):
     duration = models.CharField(max_length=3)
     # Store duration in minutes only (e.g. 120)
     trailer_desc = models.CharField(max_length=500)
+    image = models.ImageField(default="placeholder.png")
 
     def newFilm (title, age_rating, duration, trailer_desc): #create
         try:
@@ -99,8 +100,8 @@ class Film(models.Model):
             else:
                 print ("Selected film has showings, couldn't be deleted")      
         except:
-            print("Film could not be deleted, and may not exist")            
-      
+            print("Film could not be deleted, and may not exist")
+
     def updateFilm(id, fieldToEdit): #update
         try:
             for field in fieldToEdit:
@@ -110,7 +111,7 @@ class Film(models.Model):
                     Film.objects.filter(id=id).update(age_rating=field)
             return Film.objects.get(id=id)
         except:
-            print("film could not be updated")    
+            print("film could not be updated")
 
     def __str__(self):
         return self.title
@@ -140,9 +141,9 @@ class Screen(models.Model):
     def updateScreen(id, fieldToEdit): #Update
         try:
             if isinstance(fieldToEdit, bool):
-                Screen.objects.filter(id=id).update(apply_covid_restrictions=fieldToEdit) 
+                Screen.objects.filter(id=id).update(apply_covid_restrictions=fieldToEdit)
             elif isinstance(fieldToEdit, (int, float)):
-                Screen.objects.filter(id=id).update(capacity=fieldToEdit)     
+                Screen.objects.filter(id=id).update(capacity=fieldToEdit)
             return Screen.objects.get(id=id)
         except Exception as e:
             print("Screen cannot be found, perhaps you have entered an invalid field type?")
@@ -317,3 +318,14 @@ class ClubRep(Customer):
     #- Unique CR number = username (inherited from User model), ensure that username is numbers only
     #- Unique CR password = password (inherited from User model)
 
+class Prices(models.Model):
+    adult = models.FloatField(default=5.0)
+    student = models.FloatField(default=4.0)
+    child = models.FloatField(default=3.0)
+
+    def changePrices(adult, student, child):
+        Prices.objects.create(adult=adult, student=student, child=child)
+
+    def getCurrentPrices():
+        currentPrices = Prices.objects.last()
+        return currentPrices.adult, currentPrices.student, currentPrices.child
