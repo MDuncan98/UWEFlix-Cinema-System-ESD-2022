@@ -44,7 +44,7 @@ h1,h2,h3,h4,h5,h6{
 	height: 200px;
 }
 
-#id_adult_tickets, #id_student_tickets, #id_child_tickets, #id_total_cost, #discount-btn, #id_adult, #id_student, #id_child {
+#id_adult_tickets, #id_student_tickets, #id_child_tickets, #id_total_cost, #discount-btn, #id_adult, #id_student, #id_child, #id_rep_student_tickets {
 	width:90px;
 	float: right;
 }

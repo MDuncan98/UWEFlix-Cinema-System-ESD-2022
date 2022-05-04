@@ -160,6 +160,11 @@ def userpage(request):
     return render(request, 'uweflix/user.html', context)
 
 def payment(request, showing):
+    
+    if 'user_id' in request.session:
+        if request.session['user_group'] == "Club Rep":
+            return redirect('rep_payment', showing=showing)
+
     showing = Showing.getShowing(id=showing)
     form = PaymentForm()
     context = {
@@ -182,16 +187,14 @@ def payment(request, showing):
             else:
                 if 'user_id' in request.session:  # If signed in
                     user_type = request.session['user_group']
-                    if (user_type == "Student" or user_type == "Club Rep"):
-                        #Club reps and students
+                    if (user_type == "Student"):
+                        #students
                         user = Customer.objects.get(user=request.session['user_id'])
                         if payment_option == 'credit' and user.credit >= total_cost: # If paying with credit
                             user.credit -= total_cost
                             request.session['credit'] = user.credit
                             user.save()
                             paying = True
-                        elif user_type == "Club Rep" and payment_option == "tab":
-                            paying = False
                         elif payment_option == "nopay":
                             return redirect(f'/pay_with_card/?user={user.id}&cost={total_cost}&adult={adult_tickets}&student={student_tickets}&child={child_tickets}&showing={showing.id}')
                         else:
@@ -272,6 +275,58 @@ def pay_with_card(request):
         else: return render(request,"uweflix/pay_with_card.html",{'form':form})
 
     return render(request,"uweflix/pay_with_card.html",context)
+
+def rep_payment(request, showing):
+    showing = Showing.getShowing(id=showing)
+    form = RepPaymentForm()
+    rep = ClubRep.objects.get(user_id=request.session["user_id"])
+    discountRate = rep.club.discount_rate
+    context = {
+        "showing": showing,
+        "form": form,
+        "discount_rate": discountRate
+    }
+    if request.method == 'POST':
+        form = RepPaymentForm(request.POST)
+        if form.is_valid():
+            print("Valid")
+            total_cost = float(form["total_cost"].data)
+            student_tickets = int(form["rep_student_tickets"].data)
+            total_tickets = student_tickets
+            payment_option = form.cleaned_data.get("payment_options")
+            if showing.remaining_tickets < total_tickets: #If there is NOT enough tickets
+                print("Not enough tickets remaining to make this booking.")
+                return render(request, "uweflix/error.html")
+            else:
+                user_type = request.session['user_group']
+                user = Customer.objects.get(user=request.session['user_id'])
+                if payment_option == 'credit' and user.credit >= total_cost: # If paying with credit
+                    user.credit -= total_cost
+                    request.session['credit'] = user.credit
+                    user.save()
+                    paying = True
+                elif user_type == "Club Rep" and payment_option == "tab":
+                    paying = False
+                else:
+                    context = {'error': "Credit error: You do not have sufficient credit to make this order, please add funds and try again."}
+                    return render(request, "uweflix/error.html", context)
+                new_transaction = Transaction.newTransaction(user, total_cost, paying)
+                for i in range(student_tickets):
+                    Ticket.newTicket(new_transaction, showing, "student")
+                showing.remaining_tickets -= student_tickets
+                showing.save()
+                request.session['screen'] = showing.screen.id
+                request.session['transaction'] = new_transaction.id
+                request.session['film'] = showing.film.title
+                request.session['age_rating'] = showing.film.age_rating
+                request.session['date'] = showing.time.strftime("%d/%m/%y")
+                request.session['time'] = showing.time.strftime("%H:%M")
+                request.session['successful_purchase'] = True
+                return redirect('/thanks')
+        else:
+            print("invalid")
+            return render(request, 'uweflix/rep_payment.html', context={'form':form, "showing": showing})
+    return render(request, 'uweflix/rep_payment.html', context)
 
     """Form that takes 16 digit card number, expiry date, security code.
     If form is valid, do code below."""
@@ -402,7 +457,8 @@ def settle_payments(request):
             for transaction in transaction_list:
                 #Need to discuss the 'paying' aspect of this.
                 transaction.is_settled = True
-                transaction.save()   
+                transaction.save()
+                return redirect('settle_payments')    
         return render(request, 'uweflix/settle_payments.html', context)
     else:
         return redirect('home')

@@ -43,6 +43,22 @@ $(document).ready( function() {
         //Display in text field
     }
 
+    function updateTicketsRep(amt) {
+        studentPrice = 4;  
+        totalPrice = 0 
+        if (amt != '') {
+            totalPrice = totalPrice + (amt * studentPrice);
+        }
+        discount_rate_html = document.getElementById("discount_rate").innerHTML;
+        discount_rate_float = parseFloat(discount_rate_html);
+        if (!isNaN(discount_rate_float)) {
+            discountRate = discount_rate_float;
+            totalPrice = totalPrice * discountRate;
+        }
+        display = parseFloat(totalPrice).toFixed(2)
+        $("#id_total_cost").val(display);
+    }
+
     $("#discount-btn").click( function(event) {
         if ($("#id_total_cost").val() != 0.00) {
             $("#cancel-discount-btn").show();
@@ -85,6 +101,13 @@ $(document).ready( function() {
         else {
             updateTickets($("#id_adult_tickets").val(), $("#id_student_tickets").val(), $("#id_child_tickets").val());
         }    })
+
+    $("#id_rep_student_tickets").change(function() {
+        if ($("#id_rep_student_tickets").val() < 10) {
+            $("#id_rep_student_tickets").val(10);
+        }
+        updateTicketsRep($("#id_rep_student_tickets").val())    
+    })
 
     $("#payment-form").submit(function() {
         $("#id_total_cost").prop('disabled', false);

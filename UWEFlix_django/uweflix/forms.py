@@ -112,8 +112,7 @@ class PaymentForm(forms.Form):
     total_cost=forms.FloatField(label="Total Cost: ", disabled=True, required=False)
     payment_choices = [(None, 'Select an option:'),
                     ('nopay', 'Customer: Pay with Card'),
-                    ('credit', 'Student/Club Reps: Pay with Credit'), 
-                    ('tab', 'Club Reps: Add to monthly bill')]
+                    ('credit', 'Student: Pay with Credit'), ]
     payment_options = forms.ChoiceField(choices=payment_choices, widget=forms.Select(attrs={}))
     discount_code = forms.CharField(required=False, max_length=8, widget=forms.TextInput(attrs={}))
     def clean(self):
@@ -121,6 +120,26 @@ class PaymentForm(forms.Form):
         student_tickets = self.cleaned_data.get('student_tickets')
         child_tickets = self.cleaned_data.get('child_tickets')
         if adult_tickets == 0 and student_tickets == 0 and child_tickets == 0:
+            raise forms.ValidationError("You must purchase at least one ticket type.")
+        return self.cleaned_data
+
+    def __setchoices__(self, newvalue):
+        self.payment_choices = newvalue
+
+class RepPaymentForm(forms.Form):
+    rep_student_tickets = forms.IntegerField(validators=[
+        MaxValueValidator(100),
+        MinValueValidator(10)
+    ],required=False, initial=0)
+    total_cost=forms.FloatField(label="Total Cost: ", disabled=True, required=False)
+    payment_choices = [(None, 'Select an option:'),
+                    ('credit', 'Club Reps: Pay with Credit'), 
+                    ('tab', 'Club Reps: Add to monthly bill')]
+    payment_options = forms.ChoiceField(choices=payment_choices, widget=forms.Select(attrs={}))
+    discount_code = forms.CharField(required=False, max_length=8, widget=forms.TextInput(attrs={}))
+    def clean(self):
+        student_tickets = self.cleaned_data.get('student_tickets')
+        if student_tickets == 0:
             raise forms.ValidationError("You must purchase at least one ticket type.")
         return self.cleaned_data
 
