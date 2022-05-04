@@ -24,6 +24,9 @@ Register
     <p>Date of Birth: {{ customer_form.dob }}</p>
     <br/>
     <button type="submit" class="btn btn-warning">Register</button>
-
 </form>
+<br/>
+{% if confirm %}
+{{ confirm }}
+{% endif %}
 {% endblock %}

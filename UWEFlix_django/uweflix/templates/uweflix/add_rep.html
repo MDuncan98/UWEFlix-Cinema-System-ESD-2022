@@ -17,10 +17,21 @@ Add Rep
         <div class="success-string">Success: your new Club Rep account has been created.<br/>Username: {{club_rep.user.username}}</div>
         {% endif %}
         {% csrf_token %}
-        {{ userform.as_p }}
         <hr/>
-        {{ form.as_p }}
+        <div class="form-group">
+        {{ userform.as_p }}
+        </div>
         <br/>
-        <button type="submit" class="btn btn-warning">Add Rep</button>
+        <br/>
+        <hr/>
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <br/>
+        <br/>
+        <hr/>
+        <div class="form-group">
+            <button id="confirm-btn" type="submit" class="btn btn-warning">Add Rep</button>
+        </div>
         </form>
 {% endblock %}

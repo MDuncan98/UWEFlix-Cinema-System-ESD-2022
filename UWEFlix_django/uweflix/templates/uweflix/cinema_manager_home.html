@@ -39,18 +39,18 @@ Cinema Manager Home Page
 <div class="flex-container">
 
     <div class="flex-child">
-      <h2>Add Film</h2></br>
-      <h3>Add a new film for the cinema!</h3></br>
+      <h2>Manage Films</h2></br>
+      <h3>Add/delete films from the website.</h3></br>
       <a href="{% url 'add_film' %}">
-        <input type="button" value="Add Film" class="cinemaManagerHomeButtons" />
+        <input type="button" value="Manage Films" class="cinemaManagerHomeButtons" />
      </a>
     </div>
     
     <div class="flex-child">
-        <h2>Delete Film</h2></br>
-        <h3>Delete any obsolete films!</h3></br>
-        <a href="#">
-          <input type="button" value="Delete Film" class="cinemaManagerHomeButtons" />
+        <h2>Cancellation Requests</h2></br>
+        <h3>See all cancellation requests here.</h3></br>
+        <a href="{% url 'approve_cancellations' %}">
+          <input type="button" value="View Cancellations" class="cinemaManagerHomeButtons" />
        </a>
     </div>
 
@@ -86,7 +86,7 @@ Cinema Manager Home Page
     <div class="flex-child">
       <h2>Change Price</h2></br>
       <h3>Change the Prices of your Tickets! </h3></br>
-      <a href="#">
+      <a href="{%url 'change_ticket_prices' %}">
         <input type="button" value="Change Price" class="cinemaManagerHomeButtons" />
      </a>
     </div>

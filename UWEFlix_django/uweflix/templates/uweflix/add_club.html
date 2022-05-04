@@ -4,12 +4,18 @@
 Add Club
 {% endblock %}
 {% block content %}
-<h2>Welcome Add Club Here</h2>
-    <form method="post" class="form-group">
-
+<h1>Add Club</h1>
+    <form method="post" class="form-area">
+        <hr/>
         {% csrf_token %}
+        <div class="form-group">
         {{ form.as_p }}
-
-        <button type="submit" class="btn btn-success">Add Club</button>
-        </form>
+        </div>
+        <br/>
+        <br/>
+        <hr/>
+        <div class="form-group">
+            <button id="confirm-btn" type="submit" class="btn btn-warning">Add Club</button>
+        </div>
+    </form>
 {% endblock %}

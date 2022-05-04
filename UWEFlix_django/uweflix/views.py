@@ -111,10 +111,12 @@ def registerPage(request):
                 dob = customer_form.cleaned_data['dob']
                 user=form.save()
                 user.is_active = False
+                user.save()
                 student = Customer.objects.create(user=user, dob=dob)
                 group=Group.objects.get(name='Student')
                 group.user_set.add(user)
-                return render(request, 'uweflix/viewings.html')
+                context['confirm'] = "Your request has been recieved. Please wait for a Cinema Manager to approve your account."
+                return render(request, 'uweflix/register.html', context)
     return render(request, 'uweflix/register.html', context)
 
 #@unauthenticated_user
@@ -480,24 +482,6 @@ def rep_success(request):
     del request.session['successful_creation']
     return render(request, "uweflix/rep_success.html")
 
-def addClubAccount(request):
-    """context = {}
-    form = addClubAccountForm(request.POST or None)
-
-    if request.method == "POST":
-        if form.is_valid():
-
-           form.save()
-
-            #user_group = Group.objects.get(name="studentReps")
-            #user.groups.add(user_group)
-
-           messages.success(request, "Rep successfully added.")
-           return redirect('/add_account')
-
-    context['form'] = form"""
-    return render(request, "Uweflix/add_account.html", context)
-
 def review_students(request, userID):
     print(userID)
     students = User.objects.filter(is_active=False)
@@ -526,6 +510,8 @@ def review_students(request, userID):
             studentChoice = students.first()
             return redirect('review_students', userID=0)
     return render(request, "UweFlix/review_students.html", context)
+
+
 def view_order_history(request):
     form = DateIntervalForm()
     titleText = "Please select a date range to view transactions for:"
@@ -557,7 +543,6 @@ def view_order_history(request):
         return render(request, "UweFlix/view_order_history.html", context)
 
 
-
 def change_ticket_prices(request):
     form = ChangePriceForm()
     context = {
@@ -568,7 +553,8 @@ def change_ticket_prices(request):
         if form.is_valid():
             Prices.changePrices(form.cleaned_data['adult'],form.cleaned_data['student'], form.cleaned_data['child'])
             adult,student,child=Prices.getCurrentPrices()
-            print(adult)
+            context['confirm'] = f"Prices confirmed. New ticket prices: \nAdult = £{adult}\nStudent = £{student}\nChild = £{child}"
+    return render(request, "uweflix/change_ticket_prices.html", context)
 
 def request_cancellation(request):
     now = timezone.now()
@@ -601,5 +587,43 @@ def request_cancellation(request):
         requestedTransaction = Transaction.objects.filter(id=request.POST.get('transaction_number'))
         requestedTransaction.update(request_to_cancel=True)
         return redirect('request_cancellation') 
-    return render(request, "UweFlix/request_cancellation.html", context)
+    return render(request, "uweflix/request_cancellation.html", context)
+
+def approve_cancellation(request):
+    now = timezone.now()
+    user = None
+    showingsToCancel = []
+    adultTickets = []
+    childTickets = []
+    studentTickets = []
+    transaction_list = Transaction.objects.filter(request_to_cancel=True)
+    for purchase in transaction_list:
+        allTickets = Ticket.objects.filter(transaction=purchase)
+        ticket = allTickets.first()
+        if ticket is not None:
+            showingTime = ticket.showing.time
+            if showingTime > now:
+                showingsToCancel.append(ticket)
+                adultTickets.append(len(allTickets.filter(ticket_type="adult")))
+                childTickets.append(len(allTickets.filter(ticket_type="child")))
+                studentTickets.append(len(allTickets.filter(ticket_type="student")))
+    zippedList = zip(showingsToCancel, adultTickets, childTickets, studentTickets)
+    context = {
+        'zipped': zippedList
+    }
+    if request.method == "POST":
+        requestedTransaction = Transaction.getTransaction(request.POST.get('transaction_number'))
+        ticketList = Ticket.objects.filter(transaction=requestedTransaction.id)
+        totalTickets = ticketList.count()
+        transactionCost = requestedTransaction.cost
+        if requestedTransaction.customer is not None:
+            customer = Customer.objects.get(id=requestedTransaction.customer.id)
+            customer.credit += transactionCost
+            customer.save()
+        showing = ticketList.first().showing
+        showing.remaining_tickets += totalTickets
+        showing.save()
+        Transaction.deleteTransaction(requestedTransaction.id)
+        return redirect('approve_cancellations') 
+    return render(request, "uweflix/approve_cancellations.html", context)
 

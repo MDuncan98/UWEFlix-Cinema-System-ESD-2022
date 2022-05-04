@@ -28,12 +28,12 @@ urlpatterns = [
     path("student_home/", views.student_home, name="student_home"),
     path("set_payment/", views.set_payment_details, name="set_payment"),
     path("am_home/", views.am_home, name="am_home"),
-    path("add_account/", views.addClubAccount, name="add_account"),
     path("settle_payments/", views.settle_payments, name="settle_payments"),
     path("review_students/<int:userID>", views.review_students, name="review_students"),
     path("rep_success/", views.rep_success, name="rep_success"),
     path("change_ticket_prices/", views.change_ticket_prices, name="change_ticket_prices"),
     path("view_order_history/", views.view_order_history, name="view_order_history"),
-    path("request_cancellation", views.request_cancellation, name="request_cancellation"),
+    path("request_cancellation/", views.request_cancellation, name="request_cancellation"),
+    path("approve_cancellations/", views.approve_cancellation, name="approve_cancellations"),
 
 ]

@@ -47,7 +47,7 @@ Account Manager Home Page
     
     <div class="flex-child">
         <h2>Periodical Statements</h2></br>
-        <h3>View Monthly/Annual Statements for a Customer.</h3></br>
+        <h3>View monthly/annual statements for a customer.</h3></br>
         <a href="{% url 'customer_statements' %}">
           <input type="button" value="View Statements" class="accountManagerHomeButtons" />
        </a>
@@ -61,5 +61,23 @@ Account Manager Home Page
        </a>
     </div>
     
+</div>
+
+<div class="flex-container">
+    <div class="flex-child">
+        <h2>Provide Discount for Clubs</h2></br>
+        <h3>Attach a discount rate to an existing club.</h3></br>
+        <a href="#">
+          <input type="button" value="Apply Discount" class="accountManagerHomeButtons" />
+       </a>
+    </div>
+
+    <div class="flex-child">
+        <h2>Amend Account Information</h2></br>
+        <h3>Change account details for an existing user.</h3></br>
+        <a href="#">
+          <input type="button" value="Amend Account" class="accountManagerHomeButtons" />
+       </a>
+    </div>
 </div>
 {% endblock %}

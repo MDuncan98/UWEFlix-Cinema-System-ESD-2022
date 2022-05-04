@@ -41,9 +41,10 @@ h1,h2,h3,h4,h5,h6{
 
 .row-image{
 	width: 100px;
+	height: 200px;
 }
 
-#id_adult_tickets, #id_student_tickets, #id_child_tickets, #id_total_cost, #discount-btn {
+#id_adult_tickets, #id_student_tickets, #id_child_tickets, #id_total_cost, #discount-btn, #id_adult, #id_student, #id_child {
 	width:90px;
 	float: right;
 }
@@ -52,8 +53,12 @@ h1,h2,h3,h4,h5,h6{
 	float:right;
 }
 
-#id_first_name, #id_last_name, #id_password1, #id_password2, #id_dob, #id_email, #id_username {
+#id_first_name, #id_last_name, #id_password1, #id_password2, #id_dob, #id_email, #id_username, .switch {
     float: right;
+}
+
+#increase, #decrease, #resetMe, #id_street, #id_name, #id_street_number, #id_city, #id_post_code, #id_landline_number, #id_mobile_number {
+	float: right;
 }
 
 .expiry-section {
