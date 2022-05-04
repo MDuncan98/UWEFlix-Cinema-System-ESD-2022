@@ -73,7 +73,7 @@ class Film(models.Model):
     duration = models.CharField(max_length=3)
     # Store duration in minutes only (e.g. 120)
     trailer_desc = models.CharField(max_length=500)
-    image = models.ImageField(default="placeholder.png", null=True, blank=True)
+    image = models.ImageField(default="placeholder.png")
 
     def newFilm (title, age_rating): #create
         try:

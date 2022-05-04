@@ -87,7 +87,7 @@ def add_film(request):
                     image = request.FILES.get('image')
                     film.image = image
                 except:
-                    pass
+                    film.image = "uweflix/static/uweflix/images/placeholder.png"
                 film.save()
             else:
                 print("Invalid Age Rating")
@@ -272,28 +272,6 @@ def pay_with_card(request):
         else: return render(request,"uweflix/pay_with_card.html",{'form':form})
 
     return render(request,"uweflix/pay_with_card.html",context)
-
-    """Form that takes 16 digit card number, expiry date, security code.
-    If form is valid, do code below."""
-
-    """new_transaction = Transaction.newTransaction(user, total_cost, paying)
-                for i in range(adult_tickets):
-                    Ticket.newTicket(new_transaction, showing, "adult")
-                for i in range(student_tickets):
-                    Ticket.newTicket(new_transaction, showing, "student")
-                for i in range(child_tickets):
-                    Ticket.newTicket(new_transaction, showing, "child")
-                showing.remaining_tickets -= (adult_tickets + student_tickets + child_tickets)
-                showing.save()
-                request.session['screen'] = showing.screen.id
-                request.session['transaction'] = new_transaction.id
-                request.session['film'] = showing.film.title
-                request.session['age_rating'] = showing.film.age_rating
-                request.session['date'] = showing.time.strftime("%d/%m/%y")
-                request.session['time'] = showing.time.strftime("%H:%M")
-                request.session['successful_purchase'] = True
-                return redirect('/thanks')"""
-    return render(request, "uweflix/pay_with_card.html", context)
 
 def thanks(request):
     if 'successful_purchase' not in request.session:
