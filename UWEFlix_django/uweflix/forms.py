@@ -207,3 +207,22 @@ class ChangePriceForm(forms.ModelForm):
    class Meta:
         model = Prices
         fields = "__all__"
+
+class addShowingForm(forms.ModelForm):
+    class Meta:
+        model = Showing
+        fields = "__all__"
+        exclude = ('remaining_tickets',)
+
+class deleteFilmForm(forms.Form):
+    film_choices = ((None, "Select a film:"),)
+    for i in Film.objects.all():
+        tmp = ((i.id, i.title),)
+        film_choices += tmp
+    film = forms.ChoiceField(choices=film_choices)
+
+class addScreenForm(forms.ModelForm):
+    age_rating_choices = ()
+    class Meta:
+        model = Screen
+        fields = "__all__"

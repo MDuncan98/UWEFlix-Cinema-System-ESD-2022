@@ -1,0 +1,22 @@
+{% extends "uweflix/layout.html" %}
+{% load static %}
+{% block title %}
+    Add a screen
+{% endblock %}
+{% block content %}
+<h1>Add Screen</h1>
+
+<style>
+    .submit-button {
+        margin: 10px 10px 10px 10px;
+    } 
+</style>
+
+<form method="post" class="form-area" autocomplete="off">
+    <hr>
+    {% csrf_token %}
+    {{ form}}
+    <hr>
+    <button id="confirm-btn" type="submit" class="btn btn-warning">Add Screen</button>
+</form>
+{% endblock %}

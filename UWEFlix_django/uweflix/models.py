@@ -116,6 +116,9 @@ class Screen(models.Model):
     capacity = models.IntegerField()
     apply_covid_restrictions =  models.BooleanField()
 
+    def str(self):
+        return "Screen " + str(self.id)
+
     def newScreen(seats, covidRestrictions): #Create
         try:
             screen = Screen.objects.create(capacity=seats, apply_covid_restrictions=covidRestrictions)
@@ -154,9 +157,9 @@ class Showing(models.Model):
     time = models.DateTimeField()
     remaining_tickets = models.IntegerField(default=150)  # NEEDS TO BE ASSIGNED TO THE SCREEN CAPACITY SOMEHOW!
 
-    def newShowing(screen, film, time, ticketsLeft):#CREATE
+    def newShowing(screen, film, time):#CREATE
         try:
-            showing = Showing.objects.create(screen=screen, film=film, time=time, remaining_tickets=ticketsLeft)
+            showing = Showing.objects.create(screen=screen, film=film, time=time, remaining_tickets=screen.capacity)
             if screen.apply_covid_restrictions == True:
                 showing.remaining_tickets = showing.remaining_tickets / 2
                 showing.save()

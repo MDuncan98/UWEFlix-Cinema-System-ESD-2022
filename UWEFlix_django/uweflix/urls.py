@@ -36,5 +36,6 @@ urlpatterns = [
     path("view_order_history/", views.view_order_history, name="view_order_history"),
     path("request_cancellation/", views.request_cancellation, name="request_cancellation"),
     path("approve_cancellations/", views.approve_cancellation, name="approve_cancellations"),
-
+    path("add_screen/", views.add_screen, name="add_screen"),
+    path("add_showing/", views.add_showing, name="add_showing"),
 ]
