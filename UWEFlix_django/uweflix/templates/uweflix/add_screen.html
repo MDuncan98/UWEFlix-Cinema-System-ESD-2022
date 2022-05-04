@@ -15,8 +15,12 @@
 <form method="post" class="form-area" autocomplete="off">
     <hr>
     {% csrf_token %}
-    {{ form}}
+    <div class="form-group">
+    {{ form.as_p }}
+    </div>
     <hr>
+    <div class="form-group">
     <button id="confirm-btn" type="submit" class="btn btn-warning">Add Screen</button>
+    </div>
 </form>
 {% endblock %}

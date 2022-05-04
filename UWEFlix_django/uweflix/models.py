@@ -116,7 +116,7 @@ class Screen(models.Model):
     capacity = models.IntegerField()
     apply_covid_restrictions =  models.BooleanField()
 
-    def str(self):
+    def __str__(self):
         return "Screen " + str(self.id)
 
     def newScreen(seats, covidRestrictions): #Create
