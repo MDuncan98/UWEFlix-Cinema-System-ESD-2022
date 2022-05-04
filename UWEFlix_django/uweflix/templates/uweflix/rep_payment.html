@@ -50,7 +50,7 @@ Rep Payment
             <div class="form-area">
                 <br/>
                 <div class="form-group">
-                    Student Tickets (£4): {{ form.rep_student_tickets }}
+                    Student Tickets (£<span id="rep_payment_student_price">{{ student_price | floatformat:2 }}</span>): {{ form.rep_student_tickets }}
                 </div>
                 <br/>
                 <p>The following discount rate will be applied:</p>

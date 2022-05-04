@@ -12,9 +12,12 @@ $(document).ready( function() {
     }
     
     function updateTickets(at, st, ct) {
-        adultPrice = 5;
-        studentPrice = 4;
-        childPrice = 3;
+        adultPriceHTML = document.getElementById("payment_adult_price").innerHTML;
+        adultPrice = parseFloat(adultPriceHTML);
+        studentPriceHTML = document.getElementById("payment_student_price").innerHTML;
+        studentPrice = parseFloat(studentPriceHTML);
+        childPriceHTML = document.getElementById("payment_child_price").innerHTML;
+        childPrice = parseFloat(childPriceHTML);
         totalPrice = 0;
         
         if (at != '') {
@@ -44,6 +47,8 @@ $(document).ready( function() {
     }
 
     function updateTicketsRep(amt) {
+        studentPriceHTML = document.getElementById("rep_payment_student_price").innerHTML;
+        studentPrice = parseFloat(studentPriceHTML);
         studentPrice = 4;  
         totalPrice = 0 
         if (amt != '') {

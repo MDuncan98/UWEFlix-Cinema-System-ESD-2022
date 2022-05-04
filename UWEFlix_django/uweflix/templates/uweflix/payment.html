@@ -49,15 +49,15 @@ Payment
             </div>
             <div class="form-area">
                 <div class="form-group">
-                    Adult tickets (£5): {{ form.adult_tickets }}
+                    Adult tickets (£<span id="payment_adult_price">{{ adult_price | floatformat:2 }}</span>): {{ form.adult_tickets }}
                 </div>
                 <br/>
                 <div class="form-group">
-                    Student Tickets (£4): {{ form.student_tickets }}
+                    Student Tickets (£<span id="payment_student_price">{{ student_price | floatformat:2 }}</span>): {{ form.student_tickets }}
                 </div>
                 <br/>
                 <div class="form-group">
-                    Child Tickets (£3): {{ form.child_tickets }}
+                    Child Tickets (£<span id="payment_child_price">{{ child_price | floatformat:2 }}</span>): {{ form.child_tickets }}
                 </div>
                 <hr/>
                 <div class="form-group">
