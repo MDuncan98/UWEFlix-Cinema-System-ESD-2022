@@ -31,4 +31,6 @@ urlpatterns = [
     path("add_account/", views.addClubAccount, name="add_account"),
     path("settle_payments/", views.settle_payments, name="settle_payments"),
     path("review_students/<int:userID>", views.review_students, name="review_students"),
+    path("add_screen/", views.add_screen, name="add_screen"),
+    path("add_showing/", views.add_showing, name="add_showing"),
 ]

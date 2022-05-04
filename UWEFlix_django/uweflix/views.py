@@ -62,27 +62,53 @@ def showings(request, film):
     return render(request, 'uweflix/showings.html', context)
 
 def add_film(request):
-    context = {}
+    add_form = addFilmForm()
+    form = deleteFilmForm()
+    context = {"form":form, "add_form":add_form}
     if request.method == "POST":
-        ages = {"U", "PG", "12", "12A", "15", "18"}
-        title = request.POST.get('title')
-        age_rating = request.POST.get('age_rating')
-        duration = request.POST.get('duration')
-        trailer_desc = request.POST.get('trailer_desc')
-        if (duration.isdigit()):
-            if(age_rating in ages):
-                film = Film()
-                film.title = title
-                film.age_rating = age_rating
-                film.duration = duration
-                film.trailer_desc = trailer_desc
-                film.save()
-            else:
-                print("Invalid Age Rating")
-        else:
-            print("Duration is not a valid number")
+        if 'add_film' in request.POST:
+            add_form = addFilmForm(request.POST)
+            if add_form.is_valid():
+                add_form.save()
+            """ages = {"U", "PG", "12", "12A", "15", "18"}
+            title = request.POST.get('title')
+            age_rating = request.POST.get('age_rating')
+            duration = request.POST.get('duration')
+            trailer_desc = request.POST.get('trailer_desc')"""
+        if 'delete_film' in request.POST: 
+            form = deleteFilmForm(request.POST)
+            if form.is_valid():
+                film_id = form.cleaned_data['film']
+                Film.removeFilm(film_id)
+
+    context['form'] = form
+    context['add_form'] = add_form
     return render(request, 'uweflix/add_film.html', context)
 
+def add_screen(request):
+    context = {}
+    form = addScreenForm
+    if request.method == "POST":
+        form = addScreenForm(request.POST)
+        if form.is_valid():
+            capacity = form.cleaned_data['capacity']
+            covid_restrictions = form.cleaned_data['apply_covid_restrictions']
+        Screen.newScreen(capacity, covid_restrictions)      
+    context['form'] = form
+    return render(request, 'uweflix/add_screen.html', context)    
+
+def add_showing(request):
+    context = {}
+    form = addShowingForm
+    if request.method == "POST":
+        form = addShowingForm(request.POST)
+        if form.is_valid():
+            screen = form.cleaned_data['screen']
+            film = form.cleaned_data['film']
+            time = form.cleaned_data['time']
+            Showing.newShowing(screen,film,time)
+    context['form'] = form
+    return render(request, 'uweflix/add_showing.html', context)   
 
 def registerPage(request):
     form = CustomUserCreationForm()

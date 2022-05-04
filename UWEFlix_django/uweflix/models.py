@@ -7,6 +7,8 @@ from django.contrib.auth.models import *
 from datetime import datetime as dt
 import datetime
 
+from django.forms import ValidationError
+
 class User(AbstractUser):
     pass
 
@@ -74,9 +76,9 @@ class Film(models.Model):
     # Store duration in minutes only (e.g. 120)
     trailer_desc = models.CharField(max_length=500)
 
-    def newFilm (title, age_rating): #create
+    def newFilm (title, age_rating, duration, trailer_desc): #create
         try:
-            film = Film.objects.create(title=title,age_rating=age_rating)
+            film = Film.objects.create(title=title,age_rating=age_rating, duration=duration, trailer_desc=trailer_desc)
             return film
         except:
             print("Film could not be added")
@@ -92,7 +94,10 @@ class Film(models.Model):
     def removeFilm(id): #Delete
         try:
             film = Film.objects.get(id=id)
-            film.delete()
+            if not Showing.objects.exists(film=film):
+                film.delete()
+            else:
+                print ("Selected film has showings, couldn't be deleted")      
         except:
             print("Film could not be deleted, and may not exist")            
       
@@ -113,7 +118,10 @@ class Film(models.Model):
 
 class Screen(models.Model):
     capacity = models.IntegerField()
-    apply_covid_restrictions =  models.BooleanField()
+    apply_covid_restrictions =  models.BooleanField(null=True)
+
+    def __str__(self):
+        return "Screen " + str(self.id)
 
     def newScreen(seats, covidRestrictions): #Create
         try:
@@ -153,9 +161,9 @@ class Showing(models.Model):
     time = models.DateTimeField()
     remaining_tickets = models.IntegerField(default=150)  # NEEDS TO BE ASSIGNED TO THE SCREEN CAPACITY SOMEHOW!
 
-    def newShowing(screen, film, time, ticketsLeft):#CREATE
+    def newShowing(screen, film, time):#CREATE
         try:
-            showing = Showing.objects.create(screen=screen, film=film, time=time, remaining_tickets=ticketsLeft)
+            showing = Showing.objects.create(screen=screen, film=film, time=time, remaining_tickets=screen.capacity)
             if screen.apply_covid_restrictions == True:
                 showing.remaining_tickets = showing.remaining_tickets / 2
                 showing.save()

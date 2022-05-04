@@ -1,5 +1,6 @@
 from django import forms
 from uweflix.models import *
+from .models import *
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator, MinLengthValidator
 from django.utils.safestring import mark_safe
@@ -140,3 +141,26 @@ class ClubRepCreationForm(CustomUserCreationForm):
     class Meta:
         model = ACCOUNT
         fields = "__all__"""
+
+class addShowingForm(forms.ModelForm):
+    class Meta:
+        model = Showing
+        fields = "__all__"
+        exclude = ('remaining_tickets',)
+
+class deleteFilmForm(forms.Form):
+    film_choices = ((None, "Select a film:"),)
+    for i in Film.objects.all():
+        tmp = ((i.id, i.title),)
+        film_choices += tmp
+    film = forms.ChoiceField(choices=film_choices)
+        
+class addScreenForm(forms.ModelForm):
+    class Meta:
+        model = Screen
+        fields = "__all__"
+
+class addFilmForm(forms.ModelForm):
+    class Meta:
+        model = Film
+        fields = "__all__"
