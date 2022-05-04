@@ -38,12 +38,7 @@ $(document).ready( function() {
         else {
             display = parseFloat(totalPrice).toFixed(2)
             $("#id_total_cost").val(display);
-            //alert(totalPrice);
         }
-        //alert(totalPrice);
-        //Find way to get ticket price information from file
-        //Calculate cost
-        //Display in text field
     }
 
     function updateTicketsRep(amt) {
@@ -81,7 +76,6 @@ $(document).ready( function() {
 
     $("#id_adult_tickets").change(function() {
         if ($("#id_adult_tickets").val() < 0) {
-            //alert("no");
             $("#id_adult_tickets").val(0);
         }
         else {
@@ -91,7 +85,6 @@ $(document).ready( function() {
 
     $("#id_student_tickets").change(function() {
         if ($("#id_student_tickets").val() < 0) {
-            //alert("no");
             $("#id_student_tickets").val(0);
         }
         else {
@@ -100,7 +93,6 @@ $(document).ready( function() {
 
     $("#id_child_tickets").change(function() {
         if ($("#id_child_tickets").val() < 0) {
-            //alert("no");
             $("#id_child_tickets").val(0);
         }
         else {

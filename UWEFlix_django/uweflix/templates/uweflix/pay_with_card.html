@@ -5,12 +5,19 @@ Viewings
 {% endblock %}
 {% block content %}
 <h1>Payment</h1>
-<p>Amount to pay: £{{cost| floatformat:2}}</p>
-<form method="POST">
+<hr/>
+<h3>Amount to pay: £{{cost| floatformat:2}}</h3>
+<form class="form" method="POST">
     {% csrf_token %}
     <div class="form-area">
-    {{form.as_p}}
-    <input id="confirm-btn" class="btn btn-warning" type="submit" value="Pay">
-    <div>
-<form>
+        <hr/>
+        <div class="form-group">
+        {{form.as_p}}
+        </div>  
+    <hr/>
+    <div class="form-group">
+        <input id="confirm-btn" class="btn btn-warning" type="submit" value="Pay">
+    </div>
+    </div>
+</form>
 {% endblock %}

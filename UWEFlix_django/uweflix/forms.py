@@ -146,6 +146,13 @@ class RepPaymentForm(forms.Form):
     def __setchoices__(self, newvalue):
         self.payment_choices = newvalue
 
+class SelectUserForm(forms.Form):
+    user_choices = ()
+    for i in User.objects.all():
+        tmp = ((i, i),)
+        user_choices += tmp
+    user = forms.ChoiceField(choices=user_choices)
+
 
 class addClubForm(forms.ModelForm):
     class Meta:

@@ -21,7 +21,11 @@ from django.utils import timezone
 
 
 def home(request):
-    return render(request, 'uweflix/index.html')
+    form = SelectUserForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'uweflix/index.html', context)
 
 def am_home(request):
     transactions = Transaction.objects.filter(date = dt.today())
