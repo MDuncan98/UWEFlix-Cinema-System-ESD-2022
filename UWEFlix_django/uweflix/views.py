@@ -545,7 +545,7 @@ def add_rep(request):
                 newCr = ClubRep.objects.create(user=user, club=club, dob=dob, club_rep_num=clubRepNum)
                 userGroup = Group.objects.get(name="Club Rep")
                 user.groups.add(userGroup)
-                request.session['new_cr'] = newCr.club_rep_num
+                request.session['new_cr'] = newCr.user.username
                 request.session['new_club'] = newCr.club.name
                 request.session['successful_creation'] = True
                 return redirect("/rep_success")
