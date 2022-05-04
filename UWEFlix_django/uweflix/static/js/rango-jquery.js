@@ -1,15 +1,4 @@
 $(document).ready( function() {
-    var discountApplied = false;
-
-    function applyDiscount(cValue, discRate){
-        if (cValue != 0.00) {
-            discountedValue = cValue * discRate;
-            discountedValue = parseFloat(discountedValue).toFixed(2);
-            $("#id_total_cost").val(discountedValue);
-            discountApplied = true;
-            $("#discount-btn").prop('disabled', true);
-        }
-    }
     
     function updateTickets(at, st, ct) {
         adultPriceHTML = document.getElementById("payment_adult_price").innerHTML;
@@ -32,13 +21,8 @@ $(document).ready( function() {
             cValue = ct * childPrice;
             totalPrice = totalPrice + cValue;
         }
-        if (discountApplied == true) {
-            applyDiscount(totalPrice, 0.9);
-        }
-        else {
-            display = parseFloat(totalPrice).toFixed(2)
-            $("#id_total_cost").val(display);
-        }
+        display = parseFloat(totalPrice).toFixed(2)
+        $("#id_total_cost").val(display);
     }
 
     function updateTicketsRep(amt) {
@@ -52,26 +36,12 @@ $(document).ready( function() {
         discount_rate_html = document.getElementById("discount_rate").innerHTML;
         discount_rate_float = parseFloat(discount_rate_html);
         if (!isNaN(discount_rate_float)) {
-            discountRate = discount_rate_float;
+            discountRate = (100 - discount_rate_float) /100;
             totalPrice = totalPrice * discountRate;
         }
         display = parseFloat(totalPrice).toFixed(2)
         $("#id_total_cost").val(display);
     }
-
-    $("#discount-btn").click( function(event) {
-        if ($("#id_total_cost").val() != 0.00) {
-            $("#cancel-discount-btn").show();
-            applyDiscount($("#id_total_cost").val(), 0.9);
-        }
-    });
-
-    $("#cancel-discount-btn").click(function(event) {
-        discountApplied = false;
-        $("#discount-btn").prop('disabled', false);
-        $("#cancel-discount-btn").hide();
-        updateTickets($("#id_adult_tickets").val(), $("#id_student_tickets").val(), $("#id_child_tickets").val());
-    })
 
 
     $("#id_adult_tickets").change(function() {

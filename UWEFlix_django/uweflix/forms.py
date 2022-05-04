@@ -114,7 +114,6 @@ class PaymentForm(forms.Form):
                     ('nopay', 'Customer: Pay with Card'),
                     ('credit', 'Student: Pay with Credit'), ]
     payment_options = forms.ChoiceField(choices=payment_choices, widget=forms.Select(attrs={}))
-    discount_code = forms.CharField(required=False, max_length=8, widget=forms.TextInput(attrs={}))
     def clean(self):
         adult_tickets = self.cleaned_data.get('adult_tickets')
         student_tickets = self.cleaned_data.get('student_tickets')
@@ -136,7 +135,6 @@ class RepPaymentForm(forms.Form):
                     ('credit', 'Club Reps: Pay with Credit'), 
                     ('tab', 'Club Reps: Add to monthly bill')]
     payment_options = forms.ChoiceField(choices=payment_choices, widget=forms.Select(attrs={}))
-    discount_code = forms.CharField(required=False, max_length=8, widget=forms.TextInput(attrs={}))
     def clean(self):
         student_tickets = self.cleaned_data.get('student_tickets')
         if student_tickets == 0:

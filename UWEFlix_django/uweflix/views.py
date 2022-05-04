@@ -39,24 +39,22 @@ def club_rep_home(request):
     return render(request, 'uweflix/club_rep_home.html')
 
 def cinema_manager_home(request):
-    #if request.user.is_authenticated:
-        if request.session['user_group'] == "Cinema Manager":
-            context = {}
-            restrictions = Screen.objects.first().apply_covid_restrictions
-            context = {
-                'restrictions_bool' : restrictions
-            }
-            if request.method == "POST":
-                for screen in Screen.objects.all():
-                    Screen.updateScreen(screen.id, not screen.apply_covid_restrictions)
-                    context = {
-                        'restrictions_bool' : screen.apply_covid_restrictions
-                    }
-            return render(request, 'uweflix/cinema_manager_home.html', context)
-        else:
-            return redirect('/')
-    #else:
-        #return redirect('/')
+    if request.session['user_group'] == "Cinema Manager":
+        context = {}
+        restrictions = Screen.objects.first().apply_covid_restrictions
+        context = {
+            'restrictions_bool' : restrictions
+        }
+        if request.method == "POST":
+            for screen in Screen.objects.all():
+                Screen.updateScreen(screen.id, not screen.apply_covid_restrictions)
+                context = {
+                    'restrictions_bool' : not screen.apply_covid_restrictions
+                }
+            redirect('cinema_manager_home')
+        return render(request, 'uweflix/cinema_manager_home.html', context)
+    else:
+        return redirect('/')
 
 def student_home(request):
     return render(request, 'uweflix/student_home.html')
@@ -166,17 +164,17 @@ def login(request):
             if user.groups.filter(name='Student').exists():
                 request.session['user_group'] = "Student"
                 request.session['credit'] = Customer.objects.get(user=user.id).credit
-                return render (request, "uweflix/student_home.html")
+                return redirect ('student_home')
             elif user.groups.filter(name='Club Rep').exists():
                 request.session['user_group'] = "Club Rep"
                 request.session['credit'] = ClubRep.objects.get(user=user).credit
-                return render (request, "uweflix/club_rep_home.html")
+                return redirect ('club_rep_home')
             elif user.groups.filter(name='Account Manager').exists():
                 request.session['user_group'] = "Account Manager"
-                return render (request, "uweflix/am_home.html")
+                return redirect ('am_home')
             elif user.groups.filter(name='Cinema Manager').exists():
                 request.session['user_group'] = "Cinema Manager"
-                return render (request, "uweflix/cinema_manager_home.html")
+                return redirect ('cinema_manager_home')
         else:
             messages.error(request, "Bad Credentials")
     return render(request, "uweflix/login.html")
@@ -321,7 +319,7 @@ def rep_payment(request, showing):
     showing = Showing.getShowing(id=showing)
     form = RepPaymentForm()
     rep = ClubRep.objects.get(user_id=request.session["user_id"])
-    discountRate = rep.club.discount_rate
+    discountRate = 100-(rep.club.discount_rate * 100)
     adult,student,child=Prices.getCurrentPrices()
     context = {
         "showing": showing,
@@ -596,26 +594,39 @@ def view_order_history(request):
         'form': form,
         'title_text': titleText}
     if request.method == "POST":
-        form = DateIntervalForm(request.POST)
-        if form.is_valid():
-            startDate = form.cleaned_data['startDate']
-            endDate = form.cleaned_data['endDate']
-            transaction_list = Transaction.objects.filter(date__range = (startDate, endDate))
-            if not transaction_list:
-                titleText = f"There were no transactions made in your date range"
-                context = {
-                    'form': form,
-                    'title_text': titleText
-                }
-            else:
-                context = {
-                    'start_date': startDate,
-                    'end_date': endDate,
-                    'transaction_list': transaction_list,
-                    'form': form
-                }
+        user = None
+        if request.session["user_group"] == "Club Rep":
+            user = ClubRep.objects.get(user_id=request.session["user_id"])
+        elif request.session["user_group"] == "Student":
+            user = Customer.objects.get(user=request.session["user_id"])
+        if user is not None:
+            form = DateIntervalForm(request.POST)
+            if form.is_valid():
+                startDate = form.cleaned_data['startDate']
+                endDate = form.cleaned_data['endDate']
+                transaction_list = Transaction.objects.filter(customer=user, date__range = (startDate, endDate))
+                if not transaction_list:
+                    titleText = f"There were no transactions made in your date range"
+                    context = {
+                        'form': form,
+                        'title_text': titleText
+                    }
+                else:
+                    context = {
+                        'start_date': startDate,
+                        'end_date': endDate,
+                        'transaction_list': transaction_list,
+                        'form': form
+                    }
+                form = DateIntervalForm()
+            return render(request, "UweFlix/view_order_history.html", context)
+        else:
             form = DateIntervalForm()
-        return render(request, "UweFlix/view_order_history.html", context)
+            titleText = "Please select a date range to view transactions for:"
+            context = {
+                'form': form,
+                'title_text': titleText}
+            return render(request, "UweFlix/view_order_history.html", context)
     else:
         return render(request, "UweFlix/view_order_history.html", context)
 
