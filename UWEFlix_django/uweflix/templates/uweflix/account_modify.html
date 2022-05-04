@@ -16,7 +16,7 @@ Account Modify
 <form method='POST' class="form-area" action="" autocomplete="off">
     {% csrf_token %}
     <p>Current Password: {{ form.password1 }}</p>
-    <hr/>
+
     <p>First Name: {{ form.first_name }}</p>
     <p>Last Name: {{ form.last_name }}</p>
     <p>Username: {{ form.username }}</p>
