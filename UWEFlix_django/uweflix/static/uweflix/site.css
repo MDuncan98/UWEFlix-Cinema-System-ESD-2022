@@ -63,12 +63,18 @@ footer {
 	float: right;
 }
 
-#id_payment_options, #id_club, #id_card_number, #id_clubrep_choices, #id_timerange_choices {
+#id_payment_options, #id_club, #id_card_number, #id_clubrep_choices, #id_timerange_choices, #id_screen, #id_film, #id_time {
 	float:right;
 }
 
-#id_first_name, #id_last_name, #id_password1, #id_password2, #id_dob, #id_email, #id_username, .switch {
+#id_first_name, #id_last_name, #id_password1, #id_password2, #id_dob, #id_email, #id_username, .switch, #id_capacity {
     float: right;
+}
+
+#id_apply_covid_restrictions {
+	height: 30px;
+	width: 30px;
+	float: right;
 }
 
 #increase, #decrease, #resetMe, #id_street, #id_name, #id_street_number, #id_city, #id_post_code, #id_landline_number, #id_mobile_number {
@@ -85,7 +91,6 @@ footer {
 
 #id_expiry_month, #id_expiry_year {
 	width: 60px;
-	float: right;
 }
 
 #confirm-btn, #set-payment-btn {

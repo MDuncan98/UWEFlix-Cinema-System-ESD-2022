@@ -44,7 +44,7 @@ $(document).ready( function() {
     function updateTicketsRep(amt) {
         studentPriceHTML = document.getElementById("rep_payment_student_price").innerHTML;
         studentPrice = parseFloat(studentPriceHTML);
-        studentPrice = 4;  
+        //studentPrice = 4;  
         totalPrice = 0 
         if (amt != '') {
             totalPrice = totalPrice + (amt * studentPrice);

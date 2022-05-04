@@ -124,6 +124,9 @@ class Screen(models.Model):
     def __str__(self):
         return "Screen " + str(self.id)
 
+    def __str__(self):
+        return "Screen " + str(self.id)
+
     def newScreen(seats, covidRestrictions): #Create
         try:
             screen = Screen.objects.create(capacity=seats, apply_covid_restrictions=covidRestrictions)

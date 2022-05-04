@@ -1,6 +1,5 @@
 from django import forms
 from uweflix.models import *
-from .models import *
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator, MinLengthValidator
 from django.utils.safestring import mark_safe
@@ -29,7 +28,13 @@ class SearchClubRepForm(forms.Form):
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('username','email',)
+        fields = ('username','email', 'first_name', 'last_name')
+
+    def __init__(self, *args, **kwargs):
+        super(CustomUserCreationForm, self).__init__(*args, **kwargs)
+
+        for fieldname in ['password1', 'password2']:
+            self.fields[fieldname].help_text = None
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
@@ -48,7 +53,11 @@ class RegisterStudentForm(forms.ModelForm):
         fields = ('dob',)
 
 class DatePickerForm(forms.Form):
-    date = forms.DateField()
+    date = forms.DateField(required=False)
+
+class DateIntervalForm(forms.Form):
+    startDate = forms.DateField(required=True)
+    endDate = forms.DateField(required=False)
 
 class AccessClubForm(forms.Form):
     today = date.today()
@@ -103,8 +112,7 @@ class PaymentForm(forms.Form):
     total_cost=forms.FloatField(label="Total Cost: ", disabled=True, required=False)
     payment_choices = [(None, 'Select an option:'),
                     ('nopay', 'Customer: Pay with Card'),
-                    ('credit', 'Student/Club Reps: Pay with Credit'), 
-                    ('tab', 'Club Reps: Add to monthly bill')]
+                    ('credit', 'Student: Pay with Credit'), ]
     payment_options = forms.ChoiceField(choices=payment_choices, widget=forms.Select(attrs={}))
     discount_code = forms.CharField(required=False, max_length=8, widget=forms.TextInput(attrs={}))
     def clean(self):
@@ -117,6 +125,33 @@ class PaymentForm(forms.Form):
 
     def __setchoices__(self, newvalue):
         self.payment_choices = newvalue
+
+class RepPaymentForm(forms.Form):
+    rep_student_tickets = forms.IntegerField(validators=[
+        MaxValueValidator(100),
+        MinValueValidator(10)
+    ],required=False, initial=0)
+    total_cost=forms.FloatField(label="Total Cost: ", disabled=True, required=False)
+    payment_choices = [(None, 'Select an option:'),
+                    ('credit', 'Club Reps: Pay with Credit'), 
+                    ('tab', 'Club Reps: Add to monthly bill')]
+    payment_options = forms.ChoiceField(choices=payment_choices, widget=forms.Select(attrs={}))
+    discount_code = forms.CharField(required=False, max_length=8, widget=forms.TextInput(attrs={}))
+    def clean(self):
+        student_tickets = self.cleaned_data.get('student_tickets')
+        if student_tickets == 0:
+            raise forms.ValidationError("You must purchase at least one ticket type.")
+        return self.cleaned_data
+
+    def __setchoices__(self, newvalue):
+        self.payment_choices = newvalue
+
+class SelectUserForm(forms.Form):
+    user_choices = ()
+    for i in User.objects.all():
+        tmp = ((i, i),)
+        user_choices += tmp
+    user = forms.ChoiceField(choices=user_choices)
 
 
 class addClubForm(forms.ModelForm):
@@ -136,11 +171,42 @@ class ClubRepCreationForm(CustomUserCreationForm):
         model = User
         fields = ('first_name', 'last_name',)
 
+class CardPaymentForm(forms.Form):
+    today = date.today()
+    month_choices = ()
+    year_choices = ()
+    current_year = today.year
+    for i in range(12):
+        choice_string = ""
+        if i < 9:
+            choice_string += "0"
+        tmp = ((i+1, choice_string+str(i+1)),)
+        month_choices += tmp
+    for i in range(15):
+        tmp = ((current_year+i,current_year+i),)
+        year_choices += tmp
+    card_number = forms.DecimalField(max_digits=16, decimal_places=0)
+    expiry_month = forms.ChoiceField(choices=month_choices)
+    expiry_year = forms.ChoiceField(choices=year_choices)
 
-"""class addClubAccountForm(forms.ModelForm):
-    class Meta:
-        model = ACCOUNT
-        fields = "__all__"""
+    def clean(self):
+        card_number = self.cleaned_data.get('card_number')
+        expiry_month = self.cleaned_data.get('expiry_month')
+        expiry_year = self.cleaned_data.get('expiry_year')
+        try:
+            if len(str(int(card_number))) < 16:
+                raise forms.ValidationError("Card number is less than 16 digits.")
+        except:
+            raise forms.ValidationError("Card number is invalid. It must be 16 digits.")
+        expiry_date = date(int(expiry_year), int(expiry_month), calendar.monthrange(int(expiry_year), int(expiry_month))[1])
+        if expiry_date < self.today:
+            raise forms.ValidationError("The expiry date entered has already passed.")
+        return self.cleaned_data
+
+class ChangePriceForm(forms.ModelForm):
+   class Meta:
+        model = Prices
+        fields = "__all__"
 
 class addShowingForm(forms.ModelForm):
     class Meta:
@@ -154,13 +220,9 @@ class deleteFilmForm(forms.Form):
         tmp = ((i.id, i.title),)
         film_choices += tmp
     film = forms.ChoiceField(choices=film_choices)
-        
+
 class addScreenForm(forms.ModelForm):
+    age_rating_choices = ()
     class Meta:
         model = Screen
-        fields = "__all__"
-
-class addFilmForm(forms.ModelForm):
-    class Meta:
-        model = Film
         fields = "__all__"

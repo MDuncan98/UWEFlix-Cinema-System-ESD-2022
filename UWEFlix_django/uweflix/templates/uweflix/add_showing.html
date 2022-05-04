@@ -4,6 +4,7 @@
     Add a showing
 {% endblock %}
 {% block content %}
+<h1>Add Showing</h1>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css" />
@@ -12,31 +13,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
 
-
-
-
-<style>
-    .submit-button {
-        margin: 10px 10px 10px 10px;
-    } 
-</style>
-
 <script>
     jQuery(function($) {
         $("#id_time").datetimepicker();
     });
-    </script>
-    
+</script>
 
-
-<div class="row g-3 align-items-center">
-    <div class="box-element" id ="form-wrapper"></div>
-        <form id="form" method="POST">
-            {% csrf_token %}
-            {{ form}}
-            <hr>
-            <input class="submit-button" type="submit" value="Add Showing">
-        </form>
+<form method="post" class="form-area" autocomplete="off">
+    <hr>
+    {% csrf_token %}
+    <div class="form-group">
+    {{ form.as_p}}
     </div>
-</div>
+    <br/>
+    <br/>
+    <hr>
+    <div class="form-group">
+    <button id="confirm-btn" type="submit" class="btn btn-warning">Add Showing</button>
+    </div>
+</form>
+   
+
 {% endblock %}
