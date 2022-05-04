@@ -20,7 +20,9 @@
     <a href="{% url 'viewings' %}" class="navbar-item">Viewings</a>
 </div> -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="{% url 'viewings' %}">UWEFlix</a>
+        <a class="navbar-brand" href="{% url 'viewings' %}">
+            <img src="{% static 'uweflix/images/logo.png' %}" height="50" width="140" style="margin-left: 20px;">
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
         </button>
@@ -106,7 +108,7 @@
     <div class="footer">
         <footer class="navbar navbar-expand-lg navbar-dark bg-dark">
             <hr/>
-            <div class="form-area">
+            <div class="form-area" style="margin-left: 20px;">
                 <p class="navbar-brand">Options:</p>
                 <p style="color: lightgray;">Colour-blind friendly mode:
                 <label class="switch">
