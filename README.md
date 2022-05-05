@@ -1,11 +1,11 @@
-Group 18 ESD group project 2022
+Group 18 ESD Group UWEFlix Project 2022
 ===============================
 
 By Arjun Binning, Benedict Ramage-Mangles, Matthew Hill, Michael Duncan, Ross Williams
 
 The UWEFlix website is intended to replace the existing paper system.
 
-Install instrutions - Linux
+Install instructions - Linux
 -----
 ```
 $ git clone git@github.com:bean64/Group-18-ESD-2022.git
@@ -19,17 +19,17 @@ then open a web browser at http://localhost:8000
 
 Install instructions - Windows
 -----
-clone from github
+Clone from GitHub:
 ```
 git clone git@github.com:bean64/Group-18-ESD-2022.git
 ```
-set up a venv
+Set up a Virtual Environment:
 ```
 py -3 -m venv .venv
 .venv\scripts\activate
 ```
-and install
-```
+... and Install modules and components:
+``` 
 cd Group-18-ESD-2022\UWEFlix_django\
 python -m pip install --upgrade pip
 pip install -r requirements.txt
@@ -37,4 +37,4 @@ python3 manage.py makemigrations
 python3 manage.py migrate
 python3 manage.py runserver
 ```
-then open a web browser at http://localhost:8000
+... then open a web browser at http://localhost:8000.
