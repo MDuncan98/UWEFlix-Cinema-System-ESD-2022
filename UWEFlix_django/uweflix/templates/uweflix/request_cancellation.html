@@ -70,7 +70,7 @@ Request Cancellation
                     <td>{{ ticket.transaction.date | date:'d M Y' }}</td>
                     <td>{{ ticket.showing.film.title }}</td>
                     <td>{{ ticket.showing.time | date:'d M Y'}}</td>
-                    <td>{{ ticket.showing.time | date:'h:m'}}</td>
+                    <td>{{ ticket.showing.time | date:'h:i'}}</td>
                     <td>
                         {% if adult > 0 %}
                         {{ adult }}x Adult Tickets<br>
