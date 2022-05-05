@@ -15,7 +15,6 @@ urlpatterns = [
     path("topup/", views.topup, name="topup"),
     path("logout/", views.logout, name="logout"),
     path("register/", views.registerPage, name="registerPage"),
-    #path("register_cr/", views.register_clubrep, name="register_clubrep"),
     path("payment/<int:showing>/", views.payment, name="payment"),
     path("rep_payment/<int:showing>/", views.rep_payment, name="rep_payment"),
     path("pay_with_card/", views.pay_with_card, name="pay_with_card"),

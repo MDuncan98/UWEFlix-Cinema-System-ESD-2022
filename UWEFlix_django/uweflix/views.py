@@ -736,8 +736,9 @@ def approve_cancellation(request):
         transactionCost = requestedTransaction.cost
         if requestedTransaction.customer is not None:
             customer = Customer.objects.get(id=requestedTransaction.customer.id)
-            customer.credit += transactionCost
-            customer.save()
+            if requestedTransaction.is_settled == True:
+                customer.credit += transactionCost
+                customer.save()
         showing = ticketList.first().showing
         showing.remaining_tickets += totalTickets
         showing.save()
