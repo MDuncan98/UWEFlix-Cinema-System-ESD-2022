@@ -35,7 +35,7 @@
                     </div>
                 </div>
                 <hr>
-                <input type="submit" value="Add Film">
+                <input type="submit" value="Add Film" class="btn btn-warning">
             </form>
 
         </div>
@@ -47,7 +47,7 @@
                 {% csrf_token %}
                 {{ form.as_p }}
                 <hr>
-                <input type="submit" name="delete_film" value="Delete Film">
+                <input type="submit" name="delete_film" value="Delete Film" class="btn btn-warning">
                </form>
             </div>
         </div>
