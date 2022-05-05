@@ -42,3 +42,19 @@ python manage.py runserver
 **Supporting Documents:**
 -----
 All supporting documents and diagrams can be found in the documents folder.
+
+Usernames and passwords for test users:
+-----
+```
+account_manager
+Uweflix_Project
+
+cinema_manager
+uweflix1234
+
+0001
+uweflix1234
+
+michael_test
+uweflix1234
+```
