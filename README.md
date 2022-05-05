@@ -38,3 +38,6 @@ python manage.py migrate
 python manage.py runserver
 ```
 ... then open a web browser at http://localhost:8000.
+
+Supporting Documents:
+All supporting documents and diagrams can be found in the documents folder.
