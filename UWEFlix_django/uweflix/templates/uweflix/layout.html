@@ -65,6 +65,12 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'set_payment' %}">Set Payment Details</a>
                 </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'club_discount' %}">Club Discount</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'account_modify' %}">Amend Account</a>
+                </li>                                
                 {% endif %}
             </ul>
             {% if request.session.user_id is None %}

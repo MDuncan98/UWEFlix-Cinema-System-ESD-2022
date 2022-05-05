@@ -5,6 +5,8 @@ from uweflix.models import *
 
 
 urlpatterns = [
+    path("club_discount/", views.clubdiscount, name="club_discount"),
+    path("account_modify/", views.account_modify, name="account_modify"),
     path("", views.viewings, name="home"),
     path("viewings/", views.viewings, name="viewings"),
     path("showings/<int:film>/", views.showings, name="showings_by_film"),
