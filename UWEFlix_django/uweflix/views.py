@@ -19,9 +19,43 @@ from django.contrib import messages
 from django.http import Http404
 from django.utils import timezone
 
+def account_modify(request):
+    form = SelectUserForm()
+    context = {
+        'form':form
+    }
+    return render(request, 'uweflix/account_modify.html', context)
+    
+'''
+def registerPage(request):
+    form = CustomUserCreationForm()
+    customer_form = RegisterStudentForm()
+    context = {
+        'form': form,
+        'customer_form': customer_form
+    }
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        customer_form = RegisterStudentForm(request.POST)
+        if form.is_valid():
+            if customer_form.is_valid():
+                dob = customer_form.cleaned_data['dob']
+                user=form.save()
+                user.is_active = False
+                user.save()
+                student = Customer.objects.create(user=user, dob=dob)
+                group=Group.objects.get(name='Student')
+                group.user_set.add(user)
+                context['confirm'] = "Your request has been recieved. Please wait for a Cinema Manager to approve your account."
+                return render(request, 'uweflix/register.html', context)
+    return render(request, 'uweflix/register.html', context)
+'''    
 
 def home(request):
     return render(request, 'uweflix/index.html')
+    
+def clubdiscount(request):
+    return render(request, 'uweflix/discount.html')
 
 def am_home(request):
     transactions = Transaction.objects.filter(date = dt.today())

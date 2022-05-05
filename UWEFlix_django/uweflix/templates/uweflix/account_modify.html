@@ -13,10 +13,14 @@ Account Modify
       });
     } );
 </script>
+
 <form method='POST' class="form-area" action="" autocomplete="off">
     {% csrf_token %}
-    <p>Current Password: {{ form.password1 }}</p>
+    {{form}}
+    <button type="submit" class="btn btn-warning"name = select_user>Select</button>
+    <hr/>
 
+    <p>Current Password: {{ form.password1 }}</p>
     <p>First Name: {{ form.first_name }}</p>
     <p>Last Name: {{ form.last_name }}</p>
     <p>Username: {{ form.username }}</p>
@@ -24,7 +28,8 @@ Account Modify
     <p>New Password: {{ form.password2 }}</p>
     <p>Date of Birth: {{ customer_form.dob }}</p>
     <br/>
-    <button type="submit" class="btn btn-warning">Register</button>
+
+
 
 </form>
 {% endblock %}

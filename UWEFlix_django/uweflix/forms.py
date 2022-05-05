@@ -39,7 +39,7 @@ class CustomUserCreationForm(UserCreationForm):
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = User
-        fields = ('username',)
+        fields = ('username','email', 'first_name', 'last_name')
 
 class RegisterClubRepForm(forms.ModelForm):
     class Meta:
@@ -58,6 +58,14 @@ class DatePickerForm(forms.Form):
 class DateIntervalForm(forms.Form):
     startDate = forms.DateField(required=True)
     endDate = forms.DateField(required=False)
+
+class SelectUserForm(forms.Form):
+    user_choices = ()
+    for i in User.objects.all():
+        tmp = ((i, i),)
+        user_choices += tmp
+    user = forms.ChoiceField(choices=user_choices)
+    
 
 class AccessClubForm(forms.Form):
     today = date.today()
