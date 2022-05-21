@@ -3,7 +3,7 @@ Group 18 ESD Group UWEFlix Project 2022
 
 By Arjun Binning, Benedict Ramage-Mangles, Matthew Hill, Michael Duncan, Ross Williams
 
-The UWEFlix website is intended to replace the existing paper system.
+The UWEFlix website is developed using a Django virtual environment, and is intended to replace the existing paper system.
 
 Install instructions - Linux
 -----
